@@ -1,37 +1,43 @@
 <script lang="ts">
+  import { logout } from "../lib/auth";
   import "leaflet/dist/leaflet.css";
   import L from "leaflet";
   import { onMount } from "svelte";
-  import { baseMaps, tileLayers } from "../lib/MapOptions";
+  import { on } from "svelte/events";
 
-  // Run on mount or load
   onMount(() => {
     initializeMap();
   });
 
-  // Initialize map
   function initializeMap() {
     const map = L.map("map", {
+      // Center on Rodriguez Rizal
       center: [14.73531212665073, 121.15222623045906],
       zoom: 13,
     });
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png?{foo}", {
+      foo: "bar",
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(map);
 
-    // Initial tile layer
-    L.tileLayer(tileLayers[0].url, tileLayers[0].options).addTo(map);
-
-    // Add multi layers
-    L.control.layers(baseMaps).addTo(map);
+    // Add a marker
+    //L.marker([14.73531212665073, 121.15222623045906]).addTo(map);
 
     // Multi markers
     const markers = [
       [14.73531212665073, 121.15222623045906],
+      [14.13531212665073, 121.15222623045906],
       [14.750308756394281, 121.16546630859376],
       [14.734701940136672, 121.14675521850587],
     ];
 
-    // Render markers
     markers.forEach((marker) => {
       L.marker(marker).addTo(map);
+    });
+
+    map.on("click", (e: any) => {
+      console.log(e.latlng);
     });
   }
 </script>
