@@ -57,7 +57,7 @@
         name="username"
         bind:value={username}
         required
-        placeholder="e.g. john_rodnie"
+        placeholder="e.g. Juan_DelaCruz"
       />
     </div>
     <label for="fullname">Full Name</label>
@@ -69,7 +69,7 @@
         name="fullname"
         bind:value={fullname}
         required
-        placeholder="e.g. John Rodnie"
+        placeholder="e.g. Juan Dela Cruz"
       />
     </div>
     <label for="email">Email</label>
@@ -81,7 +81,7 @@
         name="email"
         bind:value={email}
         required
-        placeholder="e.g. jrodnie@email.com"
+        placeholder="e.g. juandelacuz@gmail.com"
       />
     </div>
     <label for="phone">Mobile Number</label>
@@ -93,7 +93,7 @@
         name="phone"
         required
         bind:value={mobile_number}
-        placeholder="e.g. 09913314402"
+        placeholder="e.g. 09123456789"
       />
     </div>
 
@@ -106,7 +106,7 @@
         name="password"
         bind:value={password}
         required
-        placeholder="e.g. password123"
+        placeholder=""
       />
       {#if show_password}
         <Eye size="18" onclick={() => togglePasswordVisibility("password")} />
@@ -126,7 +126,7 @@
         name="confirmPassword"
         bind:value={confirmPassword}
         required
-        placeholder="e.g. password123"
+        placeholder=""
       />
       {#if show_confirm_password}
         <Eye
