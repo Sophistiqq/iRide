@@ -1,0 +1,35 @@
+{
+  "name": "ipick",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "bunx --bun vite",
+    "build": "bunx --bun vite build",
+    "preview": "vite preview",
+    "installapp": "sh autoinstall.sh",
+    "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^5.0.3",
+    "@tsconfig/svelte": "^5.0.4",
+    "sass-embedded": "^1.83.4",
+    "svelte": "^5.15.0",
+    "svelte-check": "^4.1.1",
+    "typescript": "~5.6.2",
+    "vite": "^6.0.5"
+  },
+  "dependencies": {
+    "@fontsource/archivo-black": "^5.1.1",
+    "@fontsource/bebas-neue": "^5.1.1",
+    "@fontsource/montserrat": "^5.1.1",
+    "@fontsource/outfit": "^5.1.1",
+    "@types/leaflet": "^1.9.16",
+    "@types/leaflet-geosearch": "^3.0.0",
+    "leaflet": "^1.9.4",
+    "leaflet-geosearch": "^4.1.0",
+    "leaflet-routing-machine": "^3.2.12",
+    "lucide-svelte": "^0.474.0",
+    "svelte-spa-router": "^4.0.1"
+  }
+}

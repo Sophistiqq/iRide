@@ -1,0 +1,36 @@
+:root {
+  /* CSS HEX */
+  --text: #12213b;
+  --hover: #1d2d44ff;
+  --accent: #3fa029;
+  --border: #6a6a6a;
+  --background: #f8f9fa;
+  --primary: #219ebcff;
+  --primary-hover: #8ecae6ff;
+  --primary-active: #023047ff;
+  --secondary: #ffb703ff;
+  --secondary-active: #fb8500ff;
+  --secondary-hover: #ffd05a;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: "Montserrat", sans-serif;
+  color: var(--text);
+  user-select: none;
+}
+
+body {
+  background-color: var(--background);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Archivo Black", sans-serif;
+}
