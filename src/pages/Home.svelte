@@ -3,7 +3,9 @@
   import L from "leaflet";
   import { onMount } from "svelte";
   import { baseMaps, tileLayers } from "../lib/MapOptions";
-
+  import * as GeoSearch from "leaflet-geosearch";
+  import "leaflet-geosearch/dist/geosearch.css";
+  const provider = new GeoSearch.OpenStreetMapProvider();
   // Run on mount or load
   onMount(() => {
     initializeMap();
@@ -33,6 +35,13 @@
     markers.forEach((marker) => {
       L.marker(marker).addTo(map);
     });
+
+    map.addControl(
+      GeoSearch.GeoSearchControl({
+        provider: provider,
+        style: "bar",
+      }),
+    );
   }
 </script>
 
