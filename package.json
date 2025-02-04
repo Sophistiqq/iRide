@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "bunx --bun vite",
-    "build": "bunx --bun vite build",
+    "dev": "vite",
+    "build": "vite build",
     "preview": "vite preview",
     "installapp": "sh autoinstall.sh",
     "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json"

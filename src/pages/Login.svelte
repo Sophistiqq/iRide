@@ -3,6 +3,7 @@
   import { CircleUserRound, Eye, EyeOff, LockKeyhole } from "lucide-svelte";
   import { login } from "../lib/auth";
   import { onMount } from "svelte";
+  import { toast } from "../lib/Toast";
   let username = $state("");
   let password = $state("");
   let show_password = $state(false);
@@ -10,7 +11,11 @@
   async function handleSubmit(e: Event) {
     e.preventDefault();
     const user = await login(username, password);
-    console.log(user);
+    if (user) {
+      toast("Login successful", 2000, "success");
+    } else {
+      toast("Invalid username or password", 2000, "error");
+    }
   }
 
   onMount(() => {

@@ -30,13 +30,16 @@
   };
 
   function togglePasswordVisibility(field: "password" | "confirmPassword") {
+    alert(field);
     const input = document.getElementById(field) as HTMLInputElement;
     if (field === "password") {
       input.type = show_password ? "password" : "text";
-      show_password = !show_password;
+      show_password ? (show_password = false) : (show_password = true);
     } else {
       input.type = show_confirm_password ? "password" : "text";
-      show_confirm_password = !show_confirm_password;
+      show_confirm_password
+        ? (show_confirm_password = false)
+        : (show_confirm_password = true);
     }
   }
 </script>
@@ -106,11 +109,11 @@
         placeholder="e.g. password123"
       />
       {#if show_password}
-        <Eye size="18" on:click={() => togglePasswordVisibility("password")} />
+        <Eye size="18" onclick={() => togglePasswordVisibility("password")} />
       {:else}
         <EyeOff
           size="18"
-          on:click={() => togglePasswordVisibility("password")}
+          onclick={() => togglePasswordVisibility("password")}
         />
       {/if}
     </div>
@@ -128,12 +131,12 @@
       {#if show_confirm_password}
         <Eye
           size="18"
-          on:click={() => togglePasswordVisibility("confirmPassword")}
+          onclick={() => togglePasswordVisibility("confirmPassword")}
         />
       {:else}
         <EyeOff
           size="18"
-          on:click={() => togglePasswordVisibility("confirmPassword")}
+          onclick={() => togglePasswordVisibility("confirmPassword")}
         />
       {/if}
     </div>
