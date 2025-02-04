@@ -47,17 +47,30 @@
     z-index: 100;
     min-width: 15vw;
     flex-direction: column;
-    border: 1px solid green;
     padding-inline: 1.5rem;
     height: 100vh;
   }
 
-  @media (max-width: 458px) {
+  @media (max-width: 768px) {
     nav {
-      width: 50vw;
+      flex-direction: row;
+      justify-content: space-around;
+      align-items: center;
+      height: 7.5svh;
+      width: 100vw;
+      padding-inline: 0;
+      h1 {
+        display: none;
+      }
+      a {
+        flex-direction: column;
+        gap: 0;
+      }
+      #settings {
+        margin-block: auto;
+      }
     }
   }
-
   h1 {
     font-size: 1.5rem;
     margin-block: 2rem;

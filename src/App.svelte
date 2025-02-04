@@ -67,4 +67,10 @@
     align-items: center;
     background-color: white;
   }
+
+  @media (max-width: 768px) {
+    .container {
+      flex-direction: column-reverse;
+    }
+  }
 </style>

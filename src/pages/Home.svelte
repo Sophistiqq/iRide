@@ -5,17 +5,24 @@
   import { onMount } from "svelte";
 
   onMount(() => {
-    const map = L.map("map", {
-      center: L.latLng(49.2125578, 16.62662018),
-      zoom: 14,
-    });
-
-    L.tileLayer("https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png", {
-      maxZoom: 20,
-      attribution:
-        '&copy; OpenStreetMap France | &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    }).addTo(map);
+    initializeMap();
   });
+
+  function initializeMap() {
+    const map = L.map("map", {
+      // Center on Rodriguez Rizal
+      center: [14.73531212665073, 121.15222623045906],
+      zoom: 13,
+    });
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png?{foo}", {
+      foo: "bar",
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(map);
+
+    // Zoom to user's location on load or the default center
+    map.locate({ setView: true, maxZoom: 25 });
+  }
 </script>
 
 <div class="container">
@@ -24,12 +31,21 @@
 
 <style>
   .container {
-    height: 100vh;
-    width: 90vw;
+    width: 100svw;
   }
 
   #map {
-    height: 100vh;
+    height: 100svh;
     width: auto;
+  }
+
+  @media (max-width: 768px) {
+    .container {
+      width: 100vw;
+      height: 90svh;
+    }
+    #map {
+      height: 100%;
+    }
   }
 </style>
