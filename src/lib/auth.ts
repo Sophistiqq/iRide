@@ -13,7 +13,7 @@ type AuthState = {
   isInitialized: boolean;
 };
 
-const serverUrl = "https://elysiajs-hello-world-thhc.onrender.com";
+const serverUrl = "https://ipick-server.onrender.com";
 const tokenKey = "secret";
 
 // Single auth store

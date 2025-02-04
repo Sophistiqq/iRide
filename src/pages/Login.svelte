@@ -83,7 +83,8 @@
     flex-direction: column;
     align-items: center;
     height: 100svh;
-    gap: 1.5rem;
+    gap: 1rem;
+    padding: 1rem;
     h1 {
       font-size: 4rem;
       font-weight: bold;
@@ -107,7 +108,7 @@
     flex-direction: column;
     justify-content: center;
     padding: 2rem;
-    width: 75vw;
+    min-width: 60vw;
     box-shadow: 0 0 10px rgba(50, 50, 50, 0.2);
     border-radius: 5px;
     h3 {
@@ -127,6 +128,15 @@
       &:active {
         background-color: var(--primary-active);
       }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .container {
+      flex-direction: column;
+      align-items: center;
+      width: 100vw;
+      padding: 1rem;
     }
   }
 

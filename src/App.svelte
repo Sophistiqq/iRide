@@ -46,13 +46,19 @@
     <Loader size={40} />
   </div>
 {:else}
-  <Router {routes} />
-  {#if $authStore.isAuthenticated}
-    <Nav />
-  {/if}
+  <div class="container">
+    {#if $authStore.isAuthenticated}
+      <Nav />
+    {/if}
+    <Router {routes} />
+  </div>
 {/if}
 
 <style>
+  .container {
+    display: flex;
+    align-items: center;
+  }
   .loading-container {
     position: fixed;
     inset: 0;

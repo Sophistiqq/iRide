@@ -19,21 +19,17 @@
 </script>
 
 <div class="container">
-  <button on:click={logout}>Logout</button>
-
   <div id="map"></div>
 </div>
 
 <style>
   .container {
-    height: 92.5vh;
+    height: 100vh;
+    width: 90vw;
   }
 
   #map {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    height: 92.5vh;
-    width: 100%;
+    height: 100vh;
+    width: auto;
   }
 </style>
