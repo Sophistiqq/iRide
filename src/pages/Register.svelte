@@ -44,7 +44,7 @@
 </script>
 
 <div class="container">
-  <h1>iPick</h1>
+  <h1>iTrack</h1>
   <form class="register-form" onsubmit={handleSubmit}>
     <h3>Create Account</h3>
     <div class="input-container">
@@ -169,7 +169,7 @@
     width: 100vw;
     gap: 1.5rem;
     h1 {
-      font-size: 4rem;
+      font-size: 3.5em;
       font-weight: bold;
       background: linear-gradient(
         to right,
@@ -225,13 +225,13 @@
       flex-direction: column;
       align-items: center;
       width: 100vw;
-      padding: 1rem;
+      padding: 0.2rem;
     }
     .register-form {
       grid-template-columns: 1fr;
       width: 80vw;
       padding: 2rem;
-      gap: 0;
+      gap: 0rem;
       h3 {
         margin-bottom: 1rem;
       }

@@ -33,7 +33,7 @@
 </script>
 
 <div class="container">
-  <h1>iPick</h1>
+  <h1>iTrack</h1>
   <form class="login-form" onsubmit={handleSubmit}>
     <h3>Welcome</h3>
     <label for="username">Username</label>

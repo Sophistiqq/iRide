@@ -5,11 +5,50 @@
   import { baseMaps, tileLayers } from "../lib/MapOptions";
   import * as GeoSearch from "leaflet-geosearch";
   import "leaflet-geosearch/dist/geosearch.css";
+  import { run } from "svelte/legacy";
   const provider = new GeoSearch.OpenStreetMapProvider();
   // Run on mount or load
   onMount(() => {
     initializeMap();
+    connectWebSocket();
   });
+
+  let messages: any = [];
+  let socket: WebSocket;
+
+  function connectWebSocket() {
+    // Establish WebSocket connection
+    socket = new WebSocket("ws://192.168.1.31:3000/ws");
+
+    // Handle incoming messages
+    socket.addEventListener("message", (event) => {
+      const message = event.data;
+      messages = [...messages, message]; // Update the messages array
+    });
+
+    // Handle errors
+    socket.addEventListener("error", (error) => {
+      console.error("WebSocket error:", error);
+    });
+
+    // Handle connection close
+    socket.addEventListener("close", () => {
+      console.log("WebSocket connection closed");
+    });
+
+    // Cleanup on component destroy
+    return () => {
+      socket.close();
+    };
+  }
+
+  function sendMessage(message) {
+    if (socket.readyState === WebSocket.OPEN) {
+      socket.send(message);
+    } else {
+      console.error("WebSocket is not open");
+    }
+  }
 
   // Initialize map
   function initializeMap() {
@@ -46,6 +85,7 @@
 </script>
 
 <div class="container">
+  <button onclick={() => sendMessage}>Click</button>
   <div id="map"></div>
 </div>
 
