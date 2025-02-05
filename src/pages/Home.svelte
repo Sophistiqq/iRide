@@ -47,11 +47,17 @@
         style: "bar",
       }),
     );
+    // Alert the location on the map on clicking the map
+    map.on("click", (e) => {
+      alert(`You clicked the map at ${e.latlng}`);
+    });
   }
   let data: { latitude: any; longitude: any };
 
   async function listenFromSSE() {
-    const eventSource = new EventSource("http://localhost:3000/events");
+    const eventSource = new EventSource(
+      "https://ipick-server.onrender.com/events",
+    );
 
     eventSource.onmessage = (event) => {
       // data contains {"_id":"67a3224d5d28fa21b24a7d09","device_id":"esp32-12345","latitude":14.7392596,"longitude":121.1558978,"timestamp":"2025-02-05T08:33:17.172Z"}
@@ -67,18 +73,8 @@
   }
 
   async function addMarker(data: any) {
-    // Remove the old markers
-    markers.update((oldMarkers) => {
-      const newMarkers = oldMarkers.filter((marker) => {
-        return (
-          marker.getLatLng().lat !== data.latitude &&
-          marker.getLatLng().lng !== data.longitude
-        );
-      });
-      // Add the new marker
-      newMarkers.push(L.marker([data.latitude, data.longitude]).addTo(map));
-      return newMarkers;
-    });
+    // Add the new marker directly to the map
+    L.marker([data.latitude, data.longitude]).addTo(map);
   }
 </script>
 
