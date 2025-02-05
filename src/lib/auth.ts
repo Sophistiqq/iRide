@@ -13,7 +13,8 @@ type AuthState = {
   isInitialized: boolean;
 };
 
-const serverUrl = "https://ipick-server.onrender.com";
+//const serverUrl = "https://ipick-server.onrender.com";
+const serverUrl = "http://localhost:3000";
 const tokenKey = "secret";
 
 // Single auth store
