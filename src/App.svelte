@@ -1,4 +1,5 @@
 <script lang="ts">
+  import "./app.css";
   import Router, { push } from "svelte-spa-router";
   import Register from "./pages/Register.svelte";
   import Login from "./pages/Login.svelte";
@@ -11,7 +12,7 @@
   import { checkAuth, authStore } from "./lib/auth";
   import { Loader } from "lucide-svelte";
   import Nav from "./components/Nav.svelte";
-
+  
   const routes = {
     "/": Login,
     "/register": Register,
@@ -20,7 +21,7 @@
     "/unit-management": UnitManagement,
     "/profile": Profile,
   };
-
+  
   // Subscribe to route changes
   $: {
     const path = $location;
@@ -35,7 +36,7 @@
       }
     }
   }
-
+  
   onMount(async () => {
     await checkAuth(true);
   });
