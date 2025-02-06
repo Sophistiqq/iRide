@@ -1,6 +1,6 @@
 <script lang="ts">
   import { link, location } from "svelte-spa-router";
-  import { Home, Calendar, Wallet, Settings } from "lucide-svelte";
+  import { Home, Calendar, Wallet, CircleUserRound } from "lucide-svelte";
 
   $: activePage = $location;
 </script>
@@ -26,16 +26,16 @@
     <p>Wallet</p>
   </a>
   <a
-    href="/settings"
+    href="/profile"
     use:link
-    class={activePage === "/settings" ? "active" : ""}
-    id="settings"
+    class={activePage === "/profile" ? "active" : ""}
+    id="profile"
   >
-    <Settings
+    <CircleUserRound
       size="24"
-      color={activePage === "/settings" ? "var(--accent)" : "#333"}
+      color={activePage === "/profile" ? "var(--accent)" : "#333"}
     />
-    <p>Settings</p>
+    <p>Profile</p>
   </a>
 </nav>
 
@@ -66,7 +66,7 @@
         flex-direction: column;
         gap: 0;
       }
-      #settings {
+      #profile {
         margin-block: auto;
       }
     }
@@ -110,7 +110,7 @@
       font-weight: bold;
     }
   }
-  #settings {
+  #profile {
     margin-top: auto;
     margin-bottom: 2rem;
   }

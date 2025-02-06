@@ -1,5 +1,4 @@
 import L from "leaflet";
-
 // Define the base maps
 const tileLayers = [
   {

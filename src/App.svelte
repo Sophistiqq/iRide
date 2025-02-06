@@ -5,7 +5,7 @@
   import Home from "./pages/Home.svelte";
   import History from "./pages/History.svelte";
   import Wallet from "./pages/Wallet.svelte";
-  import Settings from "./pages/Settings.svelte";
+  import Profile from "./pages/Profile.svelte";
   import { onMount } from "svelte";
   import { location } from "svelte-spa-router";
   import { checkAuth, authStore } from "./lib/auth";
@@ -18,7 +18,7 @@
     "/home": Home,
     "/history": History,
     "/wallet": Wallet,
-    "/settings": Settings,
+    "/profile": Profile,
   };
 
   // Subscribe to route changes

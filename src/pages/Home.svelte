@@ -1,6 +1,6 @@
 <script lang="ts">
-  import "leaflet/dist/leaflet.css";
   import L from "leaflet";
+  import "leaflet/dist/leaflet.css";
   import { onMount } from "svelte";
   import { writable } from "svelte/store";
   import { baseMaps, tileLayers } from "../lib/MapOptions";
@@ -14,8 +14,7 @@
   });
 
   let markers = writable([]);
-  let map: { addControl: (arg0: any) => void };
-
+  let map: any;
   // Initialize map
   function initializeMap() {
     map = L.map("map", {
@@ -44,13 +43,13 @@
     map.addControl(
       GeoSearch.GeoSearchControl({
         provider: provider,
-        style: "bar",
+        style: "button",
       }),
     );
-    // Alert the location on the map on clicking the map
-    map.on("click", (e) => {
-      alert(`You clicked the map at ${e.latlng}`);
-    });
+    // Alert the location on the map on clicking the map for testing
+    //map.on("click", (e: { latlng: any }) => {
+    //  alert(`You clicked the map at ${e.latlng}`);
+    //});
   }
   let data: { latitude: any; longitude: any };
 
@@ -73,8 +72,16 @@
   }
 
   async function addMarker(data: any) {
-    // Add the new marker directly to the map
-    L.marker([data.latitude, data.longitude]).addTo(map);
+    // Create a marker with the provided latitude and longitude
+    const marker = L.marker([data.latitude, data.longitude]).addTo(map);
+
+    // Bind a popup with the device info
+    marker.bindPopup(`
+    <b>Device ID:</b> ${data.device_id}<br>
+    <b>Latitude:</b> ${data.latitude}<br>
+    <b>Longitude:</b> ${data.longitude}<br>
+    <b>Timestamp:</b> ${new Date(data.timestamp).toLocaleString()}
+  `);
   }
 </script>
 
