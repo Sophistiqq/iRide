@@ -4,7 +4,7 @@
   import Login from "./pages/Login.svelte";
   import Home from "./pages/Home.svelte";
   import History from "./pages/History.svelte";
-  import Wallet from "./pages/Wallet.svelte";
+  import UnitManagement from "./pages/UnitManagement.svelte";
   import Profile from "./pages/Profile.svelte";
   import { onMount } from "svelte";
   import { location } from "svelte-spa-router";
@@ -17,7 +17,7 @@
     "/register": Register,
     "/home": Home,
     "/history": History,
-    "/wallet": Wallet,
+    "/unit-management": UnitManagement,
     "/profile": Profile,
   };
 

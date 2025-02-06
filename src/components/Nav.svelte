@@ -1,6 +1,6 @@
 <script lang="ts">
   import { link, location } from "svelte-spa-router";
-  import { Home, Calendar, Wallet, CircleUserRound } from "lucide-svelte";
+  import { Home, Calendar, Bus, CircleUserRound } from "lucide-svelte";
 
   $: activePage = $location;
 </script>
@@ -18,12 +18,16 @@
     />
     <p>History</p>
   </a>
-  <a href="/wallet" use:link class={activePage === "/wallet" ? "active" : ""}>
-    <Wallet
+  <a
+    href="/unit-management"
+    use:link
+    class={activePage === "/unit-management" ? "active" : ""}
+  >
+    <Bus
       size="24"
-      color={activePage === "/wallet" ? "var(--accent)" : "#333"}
+      color={activePage === "/unit-management" ? "var(--accent)" : "#333"}
     />
-    <p>Wallet</p>
+    <p>Unit Management</p>
   </a>
   <a
     href="/profile"
@@ -45,7 +49,7 @@
     background-color: #f0f0f0;
     border-top: 1px solid #ddd;
     z-index: 100;
-    min-width: 15vw;
+    min-width: max-content;
     flex-direction: column;
     padding-inline: 1.5rem;
     height: 100vh;

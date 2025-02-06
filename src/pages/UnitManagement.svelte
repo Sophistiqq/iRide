@@ -1,10 +1,8 @@
 <script lang="ts">
-  import { logout } from "../lib/auth";
 </script>
 
 <div class="container">
-  <h1>Wallet</h1>
-  <button on:click={logout}>Logout</button>
+  <h1>Manage Units</h1>
 </div>
 
 <style lang="scss">
