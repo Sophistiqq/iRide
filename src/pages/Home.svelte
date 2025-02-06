@@ -46,10 +46,10 @@
         style: "button",
       }),
     );
-    // Alert the location on the map on clicking the map for testing
-    //map.on("click", (e: { latlng: any }) => {
-    //  alert(`You clicked the map at ${e.latlng}`);
-    //});
+    //Alert the location on the map on clicking the map for testing
+    map.on("click", (e: { latlng: any }) => {
+      alert(`You clicked the map at ${e.latlng}`);
+    });
   }
   let data: { latitude: any; longitude: any };
 
@@ -63,7 +63,7 @@
       // we will store it to the state and render it to the map
       data = JSON.parse(event.data);
       // Set the markers with the new data, replace the old location of the device
-      addMarker(data);
+      updateMarker(data);
     };
 
     return () => {
@@ -71,17 +71,31 @@
     };
   }
 
-  async function addMarker(data: any) {
-    // Create a marker with the provided latitude and longitude
-    const marker = L.marker([data.latitude, data.longitude]).addTo(map);
+  async function updateMarker(data: any) {
+    // Check if marker with the same device_id already exists
+    let existingMarker = $markers.find(
+      (marker: any) => marker.device_id === data.device_id,
+    );
 
-    // Bind a popup with the device info
-    marker.bindPopup(`
-    <b>Device ID:</b> ${data.device_id}<br>
-    <b>Latitude:</b> ${data.latitude}<br>
-    <b>Longitude:</b> ${data.longitude}<br>
-    <b>Timestamp:</b> ${new Date(data.timestamp).toLocaleString()}
-  `);
+    if (existingMarker) {
+      // Move the existing marker to the new location
+      existingMarker.setLatLng([data.latitude, data.longitude]);
+    } else {
+      // Create a new marker if it doesn't exist
+      const marker = L.marker([data.latitude, data.longitude]).addTo(map);
+      marker.device_id = data.device_id;
+
+      // Bind a popup with the device info
+      marker.bindPopup(`
+        <b>Device ID:</b> ${data.device_id}<br>
+        <b>Latitude:</b> ${data.latitude}<br>
+        <b>Longitude:</b> ${data.longitude}<br>
+        <b>Timestamp:</b> ${new Date(data.timestamp).toLocaleString()}
+      `);
+
+      // Add the new marker to the markers store
+      markers.update((currentMarkers) => [...currentMarkers, marker]);
+    }
   }
 </script>
 
