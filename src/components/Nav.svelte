@@ -87,6 +87,7 @@
     color: #333;
     margin-block: 1rem;
     background-color: transparent;
+    font-weight: bold;
     padding-top: 0.5rem;
     gap: 1rem;
     transition: transform 0.2s;
