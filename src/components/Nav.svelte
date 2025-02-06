@@ -1,6 +1,12 @@
 <script lang="ts">
   import { link, location } from "svelte-spa-router";
-  import { Home, Calendar, Bus, CircleUserRound } from "lucide-svelte";
+  import {
+    Home,
+    Calendar,
+    Bus,
+    CircleUserRound,
+    ChevronRight,
+  } from "lucide-svelte";
 
   $: activePage = $location;
 </script>
@@ -10,6 +16,7 @@
   <a href="/home" use:link class={activePage === "/home" ? "active" : ""}>
     <Home size="24" color={activePage === "/home" ? "var(--accent)" : "#333"} />
     <p>Home</p>
+    <ChevronRight size="24" color="rgba(0,0,0,0.3)" />
   </a>
   <a href="/history" use:link class={activePage === "/history" ? "active" : ""}>
     <Calendar
@@ -17,6 +24,7 @@
       color={activePage === "/history" ? "var(--accent)" : "#333"}
     />
     <p>History</p>
+    <ChevronRight size="24" color="rgba(0,0,0,0.3)" />
   </a>
   <a
     href="/unit-management"
@@ -28,6 +36,7 @@
       color={activePage === "/unit-management" ? "var(--accent)" : "#333"}
     />
     <p>Unit Management</p>
+    <ChevronRight size="24" color="rgba(0,0,0,0.3)" />
   </a>
   <a
     href="/profile"
@@ -40,6 +49,7 @@
       color={activePage === "/profile" ? "var(--accent)" : "#333"}
     />
     <p>Profile</p>
+    <ChevronRight size="24" color="rgba(0,0,0,0.3)" />
   </a>
 </nav>
 
@@ -93,6 +103,10 @@
     transition: transform 0.2s;
     user-select: none;
     -webkit-tap-highlight-color: transparent; /* Disable tap highlight */
+
+    p {
+      margin-right: auto;
+    }
   }
 
   a:active {
