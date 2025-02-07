@@ -116,6 +116,8 @@ export async function login(username: string, password: string): Promise<User | 
         isAuthenticated: true,
         isInitialized: true
       });
+      localStorage.setItem('user', JSON.stringify(data.user));
+      console.log('data', data);
       push('/home');
       return data;
     } else {
