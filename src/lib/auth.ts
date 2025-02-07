@@ -14,7 +14,7 @@ type AuthState = {
 };
 
 // const serverUrl = "https://ipick-server.onrender.com";
-// const serverUrl = "http://localhost:3000";
+//const serverUrl = "http://localhost:3000";
 const serverUrl = "http://192.168.1.31:3000";
 const tokenKey = "secret";
 

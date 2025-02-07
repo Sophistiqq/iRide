@@ -1,143 +1,185 @@
 <script lang="ts">
-  import L from "leaflet";
-  import "leaflet/dist/leaflet.css";
   import { onMount, onDestroy } from "svelte";
   import { writable } from "svelte/store";
-  import { baseMaps, tileLayers } from "../lib/MapOptions";
-  import * as GeoSearch from "leaflet-geosearch";
-  import "leaflet-geosearch/dist/geosearch.css";
+  import { Loader } from "@googlemaps/js-api-loader";
 
-  const provider = new GeoSearch.OpenStreetMapProvider();
-  const markers = writable(new Map()); // Use Map instead of Array for O(1) lookups
-  let map: any = null;
+  // A Svelte store to track markers by device ID.
+  const markers = writable(new Map<string, google.maps.Marker>());
+  let map: google.maps.Map;
   let eventSource: EventSource | null = null;
+  let markerInfoWindow: google.maps.InfoWindow;
 
-  // Initialize map
-  function initializeMap() {
-    if (map) return; // Prevent multiple initializations
+  /**
+   * Loads the Google Maps API and initializes the map.
+   */
+  async function initializeMap() {
+    // Load the Google Maps API with the Places library (for search)
+    const loader = new Loader({
+      apiKey: "AIzaSyBTVoAYJ7vxQ5cSiIRYDc7_b0nJB-X6QR8", // Replace with your API key
+      version: "weekly",
+      libraries: ["places"],
+    });
+    await loader.load();
 
-    map = L.map("map", {
-      center: [14.73531212665073, 121.15222623045906],
+    // Initialize the map
+    const mapDiv = document.getElementById("map") as HTMLElement;
+    map = new google.maps.Map(mapDiv, {
+      center: { lat: 14.73531212665073, lng: 121.15222623045906 },
       zoom: 13,
+      mapTypeControl: true, // Enables the base map type control
     });
 
-    // Initial tile layer with better memory management
-    const baseLayer = L.tileLayer(tileLayers[0].url, {
-      ...tileLayers[0].options,
-      keepBuffer: 2, // Reduce the number of tiles kept in memory
+    // Create and add a search box (mimicking your Leaflet GeoSearch control)
+    const input = document.getElementById("pac-input") as HTMLInputElement;
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+    const searchBox = new google.maps.places.SearchBox(input);
+
+    // Bias the SearchBox results toward the map's current viewport.
+    map.addListener("bounds_changed", () => {
+      searchBox.setBounds(map.getBounds() as google.maps.LatLngBounds);
     });
-    baseLayer.addTo(map);
 
-    // Add multi layers
-    L.control.layers(baseMaps).addTo(map);
+    // When the user selects a place, zoom to its bounds.
+    searchBox.addListener("places_changed", () => {
+      const places = searchBox.getPlaces();
+      if (!places || places.length === 0) return;
 
-    // Add search control
-    map.addControl(
-      GeoSearch.GeoSearchControl({
-        provider: provider,
-        style: "button",
-      }),
-    );
-
-    // Debounced click handler
-    let clickTimeout: number;
-    map.on("click", (e: { latlng: any }) => {
-      if (clickTimeout) {
-        window.clearTimeout(clickTimeout);
-      }
-      clickTimeout = window.setTimeout(() => {
-        alert(`You clicked the map at ${e.latlng}`);
-      }, 300);
+      const bounds = new google.maps.LatLngBounds();
+      places.forEach((place) => {
+        if (!place.geometry || !place.geometry.location) return;
+        if (place.geometry.viewport) {
+          bounds.union(place.geometry.viewport);
+        } else {
+          bounds.extend(place.geometry.location);
+        }
+      });
+      map.fitBounds(bounds);
     });
   }
 
+  /**
+   * Listens to server-sent events (SSE) and updates markers.
+   */
   function listenFromSSE() {
     if (eventSource) {
       eventSource.close();
     }
+    // Uncomment and change the URL as needed.
+    // eventSource = new EventSource("https://ipick-server.onrender.com/events");
+    eventSource = new EventSource("http://192.168.1.31:3000/events");
 
-    //eventSource = new EventSource("https://ipick-server.onrender.com/events");
-    eventSource = new EventSource("http://localhost:3000/events");
-    // Use a debounced update function
     let updateTimeout: number;
-
     eventSource.onmessage = (event) => {
       if (updateTimeout) {
         window.clearTimeout(updateTimeout);
       }
-
       updateTimeout = window.setTimeout(() => {
         const locationsArray = JSON.parse(event.data);
         locationsArray.forEach((location: any) => {
           updateMarker(location);
         });
-      }, 100); // Debounce updates to prevent excessive rendering
+      }, 100);
     };
   }
 
+  /**
+   * Updates an existing marker or creates a new one.
+   * @param data - The location data containing device_id, latitude, longitude, and timestamp.
+   */
   function updateMarker(data: any) {
     if (!map) return;
 
     markers.update((markersMap) => {
       const existingMarker = markersMap.get(data.device_id);
+      const position = { lat: data.latitude, lng: data.longitude };
 
       if (existingMarker) {
-        existingMarker.setLatLng([data.latitude, data.longitude]);
-        existingMarker.setPopupContent(`
-          <b>Device ID:</b> ${data.device_id}<br>
-          <b>Latitude:</b> ${data.latitude}<br>
-          <b>Longitude:</b> ${data.longitude}<br>
-          <b>Timestamp:</b> ${new Date(data.timestamp).toLocaleString()}
-        `);
+        // Update the marker position and store the new data.
+        existingMarker.setPosition(position);
+        // Save the latest data in a custom property.
+        (existingMarker as any).myData = data;
       } else {
-        const marker = L.marker([data.latitude, data.longitude]).addTo(map);
-        marker.bindPopup(`
-          <b>Device ID:</b> ${data.device_id}<br>
-          <b>Latitude:</b> ${data.latitude}<br>
-          <b>Longitude:</b> ${data.longitude}<br>
-          <b>Timestamp:</b> ${new Date(data.timestamp).toLocaleString()}
-        `);
+        // Create a new marker.
+        const marker = new google.maps.Marker({
+          position,
+          map,
+          title: `Device ${data.device_id}`,
+        });
+        // Store the location data on the marker.
+        (marker as any).myData = data;
+
+        // When the marker is clicked, show an info window with device details.
+        marker.addListener("click", () => {
+          const d = (marker as any).myData;
+          markerInfoWindow.setContent(`
+            <div>
+              <b>Device ID:</b> ${d.device_id}<br>
+              <b>Latitude:</b> ${d.latitude}<br>
+              <b>Longitude:</b> ${d.longitude}<br>
+              <b>Timestamp:</b> ${new Date(d.timestamp).toLocaleString()}
+            </div>
+          `);
+          markerInfoWindow.open(map, marker);
+        });
         markersMap.set(data.device_id, marker);
       }
-
       return markersMap;
     });
   }
 
-  // Proper cleanup
+  // Cleanup when the component is destroyed.
   onDestroy(() => {
     if (eventSource) {
       eventSource.close();
     }
-    if (map) {
-      map.remove(); // Properly removes the map and all event listeners
-      map = null;
-    }
-    markers.set(new Map()); // Clear all markers
   });
 
-  onMount(() => {
-    initializeMap();
+  // Initialize the map and start listening for events when the component mounts.
+  onMount(async () => {
+    await initializeMap();
+    markerInfoWindow = new google.maps.InfoWindow();
     listenFromSSE();
   });
 </script>
 
+<!--
+  The container includes an input element for the search box and a div for the map.
+-->
 <div class="container">
+  <input id="pac-input" class="controls" type="text" placeholder="Search Box" />
   <div id="map"></div>
 </div>
 
 <style>
   .container {
-    padding-left: 1rem;
+    position: relative;
+    padding: 1rem;
   }
+
+  /* Fullscreen map container */
   #map {
-    height: 100svh;
+    height: 100vh;
+    width: 100%;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   }
+
+  /* Styles for the search input */
+  .controls {
+    margin-top: 10px;
+    border: 1px solid transparent;
+    border-radius: 2px 0 0 2px;
+    box-sizing: border-box;
+    height: 32px;
+    outline: none;
+    padding: 0 12px;
+    width: 300px;
+  }
+
   @media (max-width: 768px) {
     .container {
       width: 100vw;
-      height: 90svh;
+      height: 90vh;
     }
     #map {
       height: 100%;

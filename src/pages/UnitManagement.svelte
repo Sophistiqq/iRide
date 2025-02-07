@@ -14,6 +14,14 @@
 
 <div class="container">
   <h1>Manage Units</h1>
+  <p>Manage units and their account settings here.</p>
+
+  <div class="table-wrapper">
+    <div class="table-header">
+      <h2>All units</h2>
+      <!-- Search bar -->
+    </div>
+  </div>
 </div>
 
 <style lang="scss">
