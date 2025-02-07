@@ -1,102 +1,125 @@
 <script lang="ts">
   import L from "leaflet";
   import "leaflet/dist/leaflet.css";
-  import { onMount } from "svelte";
+  import { onMount, onDestroy } from "svelte";
   import { writable } from "svelte/store";
   import { baseMaps, tileLayers } from "../lib/MapOptions";
   import * as GeoSearch from "leaflet-geosearch";
   import "leaflet-geosearch/dist/geosearch.css";
-  const provider = new GeoSearch.OpenStreetMapProvider();
-  // Run on mount or load
-  onMount(() => {
-    initializeMap();
-    listenFromSSE();
-  });
 
-  let markers = writable([]);
-  let map: any;
+  const provider = new GeoSearch.OpenStreetMapProvider();
+  const markers = writable(new Map()); // Use Map instead of Array for O(1) lookups
+  let map: any = null;
+  let eventSource: EventSource | null = null;
+
   // Initialize map
   function initializeMap() {
+    if (map) return; // Prevent multiple initializations
+
     map = L.map("map", {
       center: [14.73531212665073, 121.15222623045906],
       zoom: 13,
     });
 
-    // Initial tile layer
-    L.tileLayer(tileLayers[0].url, tileLayers[0].options).addTo(map);
+    // Initial tile layer with better memory management
+    const baseLayer = L.tileLayer(tileLayers[0].url, {
+      ...tileLayers[0].options,
+      keepBuffer: 2, // Reduce the number of tiles kept in memory
+    });
+    baseLayer.addTo(map);
 
     // Add multi layers
     L.control.layers(baseMaps).addTo(map);
 
-    // Multi markers
-    //const markers = [
-    //  [14.73531212665073, 121.15222623045906],
-    //  [14.750308756394281, 121.16546630859376],
-    //  [14.734701940136672, 121.14675521850587],
-    //];
-
-    // Render markers
-    $markers.forEach((marker: any) => {
-      L.marker(marker).addTo(map);
-    });
-
+    // Add search control
     map.addControl(
       GeoSearch.GeoSearchControl({
         provider: provider,
         style: "button",
       }),
     );
-    //Alert the location on the map on clicking the map for testing
+
+    // Debounced click handler
+    let clickTimeout: number;
     map.on("click", (e: { latlng: any }) => {
-      alert(`You clicked the map at ${e.latlng}`);
+      if (clickTimeout) {
+        window.clearTimeout(clickTimeout);
+      }
+      clickTimeout = window.setTimeout(() => {
+        alert(`You clicked the map at ${e.latlng}`);
+      }, 300);
     });
   }
-  let data: { latitude: any; longitude: any };
 
-  async function listenFromSSE() {
-    const eventSource = new EventSource(
-      "https://ipick-server.onrender.com/events",
-    );
+  function listenFromSSE() {
+    if (eventSource) {
+      eventSource.close();
+    }
+
+    //eventSource = new EventSource("https://ipick-server.onrender.com/events");
+    eventSource = new EventSource("http://localhost:3000/events");
+    // Use a debounced update function
+    let updateTimeout: number;
 
     eventSource.onmessage = (event) => {
-      // data contains {"_id":"67a3224d5d28fa21b24a7d09","device_id":"esp32-12345","latitude":14.7392596,"longitude":121.1558978,"timestamp":"2025-02-05T08:33:17.172Z"}
-      // we will store it to the state and render it to the map
-      data = JSON.parse(event.data);
-      // Set the markers with the new data, replace the old location of the device
-      updateMarker(data);
-    };
+      if (updateTimeout) {
+        window.clearTimeout(updateTimeout);
+      }
 
-    return () => {
+      updateTimeout = window.setTimeout(() => {
+        const locationsArray = JSON.parse(event.data);
+        locationsArray.forEach((location: any) => {
+          updateMarker(location);
+        });
+      }, 100); // Debounce updates to prevent excessive rendering
+    };
+  }
+
+  function updateMarker(data: any) {
+    if (!map) return;
+
+    markers.update((markersMap) => {
+      const existingMarker = markersMap.get(data.device_id);
+
+      if (existingMarker) {
+        existingMarker.setLatLng([data.latitude, data.longitude]);
+        existingMarker.setPopupContent(`
+          <b>Device ID:</b> ${data.device_id}<br>
+          <b>Latitude:</b> ${data.latitude}<br>
+          <b>Longitude:</b> ${data.longitude}<br>
+          <b>Timestamp:</b> ${new Date(data.timestamp).toLocaleString()}
+        `);
+      } else {
+        const marker = L.marker([data.latitude, data.longitude]).addTo(map);
+        marker.bindPopup(`
+          <b>Device ID:</b> ${data.device_id}<br>
+          <b>Latitude:</b> ${data.latitude}<br>
+          <b>Longitude:</b> ${data.longitude}<br>
+          <b>Timestamp:</b> ${new Date(data.timestamp).toLocaleString()}
+        `);
+        markersMap.set(data.device_id, marker);
+      }
+
+      return markersMap;
+    });
+  }
+
+  // Proper cleanup
+  onDestroy(() => {
+    if (eventSource) {
       eventSource.close();
-    };
-  }
-
-  async function updateMarker(data: any) {
-    // Check if marker with the same device_id already exists
-    let existingMarker = $markers.find(
-      (marker: any) => marker.device_id === data.device_id,
-    );
-
-    if (existingMarker) {
-      // Move the existing marker to the new location
-      existingMarker.setLatLng([data.latitude, data.longitude]);
-    } else {
-      // Create a new marker if it doesn't exist
-      const marker = L.marker([data.latitude, data.longitude]).addTo(map);
-      marker.device_id = data.device_id;
-
-      // Bind a popup with the device info
-      marker.bindPopup(`
-        <b>Device ID:</b> ${data.device_id}<br>
-        <b>Latitude:</b> ${data.latitude}<br>
-        <b>Longitude:</b> ${data.longitude}<br>
-        <b>Timestamp:</b> ${new Date(data.timestamp).toLocaleString()}
-      `);
-
-      // Add the new marker to the markers store
-      markers.update((currentMarkers) => [...currentMarkers, marker]);
     }
-  }
+    if (map) {
+      map.remove(); // Properly removes the map and all event listeners
+      map = null;
+    }
+    markers.set(new Map()); // Clear all markers
+  });
+
+  onMount(() => {
+    initializeMap();
+    listenFromSSE();
+  });
 </script>
 
 <div class="container">
@@ -105,14 +128,12 @@
 
 <style>
   .container {
-    width: 100svw;
+    padding-left: 1rem;
   }
-
   #map {
     height: 100svh;
-    width: auto;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   }
-
   @media (max-width: 768px) {
     .container {
       width: 100vw;
