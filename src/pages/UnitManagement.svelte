@@ -19,7 +19,6 @@
   <div class="table-wrapper">
     <div class="table-header">
       <h2>All units</h2>
-      <!-- Search bar -->
     </div>
   </div>
 </div>
@@ -27,6 +26,7 @@
 <style lang="scss">
   .container {
     height: 100vh;
+    width: 100%;
   }
 
   @media (max-width: 768px) {

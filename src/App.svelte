@@ -59,11 +59,12 @@
   .container {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     margin: 0;
     padding: 0;
     width: 100vw;
     max-width: 100vw;
+    gap: 0.5rem;
   }
   .loading-container {
     position: fixed;
