@@ -12,16 +12,16 @@
   import { checkAuth, authStore } from "./lib/auth";
   import { Loader } from "lucide-svelte";
   import Nav from "./components/Nav.svelte";
-  
   const routes = {
     "/": Login,
     "/register": Register,
-    "/home": Home,
+    //"/home": Home,
     "/history": History,
     "/unit-management": UnitManagement,
     "/profile": Profile,
+    "/home": Home,
   };
-  
+
   // Subscribe to route changes
   $: {
     const path = $location;
@@ -36,7 +36,7 @@
       }
     }
   }
-  
+
   onMount(async () => {
     await checkAuth(true);
   });
@@ -59,6 +59,11 @@
   .container {
     display: flex;
     align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    max-width: 100vw;
   }
   .loading-container {
     position: fixed;
