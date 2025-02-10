@@ -1,6 +1,5 @@
 <script lang="ts">
   import { link, location } from "svelte-spa-router";
-  import { slide } from "svelte/transition";
   import {
     Home,
     Calendar,
@@ -12,7 +11,7 @@
   $: activePage = $location;
 </script>
 
-<nav transition:slide={{ axis: "y" }}>
+<nav>
   <h1>iTrack</h1>
   <a href="/home" use:link class={activePage === "/home" ? "active" : ""}>
     <Home size="24" color={activePage === "/home" ? "var(--accent)" : "#333"} />

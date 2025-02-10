@@ -2,7 +2,7 @@
   import { Loader } from "@googlemaps/js-api-loader";
   import { onMount, onDestroy } from "svelte";
   import { writable } from "svelte/store";
-
+  import mapMarker from "../assets/icon.png";
   let map: google.maps.Map;
   let eventSource: EventSource | null = null;
   let markerInfoWindow: google.maps.InfoWindow;
@@ -36,7 +36,7 @@
       zoomControl: false,
       streetViewControl: false,
       rotateControl: true,
-      mapTypeControl: false,
+      //mapTypeControl: false,
       mapId: "f1b7b3e3b1b3b7f",
     });
 
@@ -52,11 +52,9 @@
 
     initialMarker.addListener("click", () => {
       markerInfoWindow.setContent(`
-        <div>
           <b>Initial Marker</b><br>
           <b>Latitude:</b> 14.7289<br>
           <b>Longitude:</b> 121.1441
-        </div>
       `);
       markerInfoWindow.open(map, initialMarker);
     });
@@ -125,10 +123,18 @@
         marker.position = position;
         (marker as any).myData = data;
       } else {
+        // Create an img element for the custom marker
+        const markerImg = document.createElement("img");
+        markerImg.src = mapMarker;
+        markerImg.style.width = "30px"; // Adjust the size as needed
+        markerImg.style.height = "40px";
+
+        // Create the AdvancedMarkerElement with the custom image as content
         marker = new AdvancedMarkerElement({
           position,
           map,
           title: `Device ${data.device_id}`,
+          content: markerImg, // Set the custom image as the content
         });
 
         (marker as any).myData = data;
@@ -136,13 +142,13 @@
         marker.addListener("click", () => {
           const d = (marker as any).myData;
           markerInfoWindow.setContent(`
-            <div>
-              <b>Device ID:</b> ${d.device_id}<br>
-              <b>Latitude:</b> ${d.latitude}<br>
-              <b>Longitude:</b> ${d.longitude}<br>
-              <b>Timestamp:</b> ${new Date(d.timestamp).toLocaleString()}
-            </div>
-          `);
+          <div>
+            <b>Device ID:</b> ${d.device_id}<br>
+            <b>Latitude:</b> ${d.latitude}<br>
+            <b>Longitude:</b> ${d.longitude}<br>
+            <b>Timestamp:</b> ${new Date(d.timestamp).toLocaleString()}
+          </div>
+        `);
           markerInfoWindow.open(map, marker);
         });
 
