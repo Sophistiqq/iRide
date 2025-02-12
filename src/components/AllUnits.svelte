@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { ArrowUpDown, Loader2 } from "lucide-svelte";
+  import { ArrowUpDown, Loader2, RefreshCcwIcon } from "lucide-svelte";
 
   interface Location {
     id: string;
@@ -85,10 +85,6 @@
     }
   }
 
-  function copyCoordinates(lat: number, lng: number) {
-    navigator.clipboard.writeText(`${lat}, ${lng}`);
-  }
-
   function openInMaps(lat: number, lng: number) {
     window.open(`https://www.google.com/maps?q=${lat},${lng}`, "_blank");
   }
@@ -104,6 +100,15 @@
           totalItems,
         )} of {totalItems} entries
       </span>
+      <button
+        onclick={getHistoryAllUnits}
+        disabled={loading}
+        class="refresh-button"
+        title="Refresh data"
+      >
+        <RefreshCcwIcon size="20" class="animate-spin" />
+      </button>
+
       <select bind:value={itemsPerPage} onchange={() => (currentPage = 1)}>
         <option value={5}>5 per page</option>
         <option value={10}>10 per page</option>
@@ -139,7 +144,7 @@
                 <ArrowUpDown size={16} />
               </button>
             </th>
-            <th>Location</th>
+            <th>Last Location</th>
             <th>
               <button
                 class="sort-button"
@@ -164,14 +169,6 @@
                     )}</span
                   >
                   <div class="coordinate-actions">
-                    <button
-                      class="icon-button"
-                      onclick={() =>
-                        copyCoordinates(unit.latitude, unit.longitude)}
-                      title="Copy coordinates"
-                    >
-                      Copy
-                    </button>
                     <button
                       class="icon-button"
                       onclick={() => openInMaps(unit.latitude, unit.longitude)}
@@ -253,10 +250,6 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
-
-    h2 {
-      margin: 0;
-    }
   }
 
   .pagination-controls {
@@ -354,7 +347,6 @@
     border: none;
     border-radius: 0.25rem;
     cursor: pointer;
-    font-size: 0.875rem;
 
     &:hover {
       background-color: #e0e0e0;
@@ -373,7 +365,6 @@
     border: none;
     border-radius: 0.25rem;
     cursor: pointer;
-    font-size: 0.875rem;
 
     &:hover {
       background-color: var(--primary-hover);
@@ -394,7 +385,8 @@
       cursor: pointer;
 
       &:hover:not(:disabled) {
-        background-color: #f0f0f0;
+        background-color: var(--primary-hover);
+        color: var(--text);
       }
 
       &:disabled {
@@ -411,6 +403,14 @@
 
     .ellipsis {
       padding: 0.5rem 0.75rem;
+    }
+  }
+  .refresh-button {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    &:active {
+      transform: scale(0.9);
     }
   }
 </style>

@@ -142,7 +142,7 @@
     font-size: 2.5rem;
 
     img {
-      width: 4rem;
+      width: 3.5rem;
       height: 4rem;
     }
   }

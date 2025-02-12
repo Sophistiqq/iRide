@@ -25,9 +25,6 @@
     const { InfoWindow } = (await loader.importLibrary(
       "maps",
     )) as google.maps.MapsLibrary;
-    const { AdvancedMarkerElement } = (await loader.importLibrary(
-      "marker",
-    )) as google.maps.MarkerLibrary;
 
     // Initialize map
     map = new Map(document.getElementById("map") as HTMLElement, {
@@ -43,22 +40,6 @@
     // Initialize InfoWindow after map is created
     markerInfoWindow = new InfoWindow();
 
-    // Create initial marker
-    const initialMarker = new AdvancedMarkerElement({
-      map,
-      position: { lat: 14.7289, lng: 121.1441 },
-      title: "Current",
-    });
-
-    initialMarker.addListener("click", () => {
-      markerInfoWindow.setContent(`
-          <b>Initial Marker</b><br>
-          <b>Latitude:</b> 14.7289<br>
-          <b>Longitude:</b> 121.1441
-      `);
-      markerInfoWindow.open(map, initialMarker);
-    });
-
     // Only start SSE after map is fully initialized
     listenFromSSE();
   }
@@ -68,10 +49,12 @@
       eventSource.close();
     }
 
-    eventSource = new EventSource("http://192.168.1.31:3000/events");
+    eventSource = new EventSource("https://ipick-server.onrender.com/events");
 
     let updateTimeout: number;
     eventSource.onmessage = (event) => {
+      const parsed = JSON.parse(event.data);
+      console.log(parsed);
       if (updateTimeout) {
         window.clearTimeout(updateTimeout);
       }
@@ -138,17 +121,18 @@
         });
 
         (marker as any).myData = data;
+        const contentString =
+          `<div style="font-family: Arial, sans-serif; font-size: 14px;" id="content">` +
+          `<h2 style="margin: 0; padding: 0;">${data.device_id}</h2>` +
+          `<div style="margin-top: 5px;">` +
+          `<b>Latitude:</b> ${data.latitude}<br>` +
+          `<b>Longitude:</b> ${data.longitude}<br>` +
+          `<b>Timestamp:</b> ${new Date(data.timestamp).toLocaleString()}<br>` +
+          `</div>` +
+          `</div>`;
 
         marker.addListener("click", () => {
-          const d = (marker as any).myData;
-          markerInfoWindow.setContent(`
-          <div>
-            <b>Device ID:</b> ${d.device_id}<br>
-            <b>Latitude:</b> ${d.latitude}<br>
-            <b>Longitude:</b> ${d.longitude}<br>
-            <b>Timestamp:</b> ${new Date(d.timestamp).toLocaleString()}
-          </div>
-        `);
+          markerInfoWindow.setContent(contentString);
           markerInfoWindow.open(map, marker);
         });
 
