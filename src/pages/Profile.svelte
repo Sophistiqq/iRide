@@ -1,8 +1,8 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { logout } from "../lib/auth";
-  import Button from "../lib/components/ui/button/button.svelte";
   import { fly } from "svelte/transition";
+  import { toast } from "../lib/Toast";
   type User = {
     fullname: string;
     username: string;
@@ -12,14 +12,14 @@
     updated_at: string;
   };
 
-  let user_data: User = {
+  let user_data: User = $state({
     fullname: "",
     username: "",
     email: "",
     mobile_number: "",
     created_at: "",
     updated_at: "",
-  };
+  });
 
   onMount(() => {
     getData();
@@ -37,35 +37,45 @@
 
   // Function to handle the password change request
   async function requestPasswordChange() {
-    // const user = JSON.parse(localStorage.getItem("user") || "{}");
-
-    // // Send request to admin (or backend system) to initiate password change
-    // const response = await fetch(
-    //   "http://192.168.1.31:3000/request-password-change",
-    //   {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify({
-    //       username: user.username,
-    //       message: "Request for password change",
-    //     }),
-    //   },
-    // );
-
-    // const data = await response.json();
-
-    // if (data.success) {
-    //   alert("Password change request sent to the admin successfully.");
-    // } else {
-    //   alert("Failed to send password change request.");
-    // }
-
     showModal = true;
   }
 
-  let showModal = false;
+  let username = $state("");
+  let old_password = $state("");
+  let new_password = $state("");
+  let confirm_password = $state("");
+
+  async function submitPasswordChange(e: Event) {
+    e.preventDefault();
+    username = user_data.username;
+    if (new_password !== confirm_password) {
+      toast("Password does not match", 2000, "error");
+      return;
+    }
+
+    console.log(username, old_password, new_password, confirm_password);
+    const res = await fetch(
+      "https://ipick-server.onrender.com/change-password",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username,
+          old_password,
+          new_password,
+        }),
+      },
+    );
+    const data = await res.json();
+    if (data.status === "success") {
+      toast(data.message, 2000, data.status);
+      showModal = false;
+    } else {
+      toast(data.message, 2000, data.status);
+    }
+  }
+
+  let showModal = $state(false);
 </script>
 
 <div class="container">
@@ -87,8 +97,9 @@
       readonly
     />
 
-      <button id="changepass" onclick={requestPasswordChange}>Request Password Change</button>
-
+    <button id="changepass" onclick={requestPasswordChange}
+      >Request Password Change</button
+    >
 
     <div class="logbutton">
       <button class="logout" onclick={logout}>Logout</button>
@@ -98,17 +109,16 @@
 
 {#if showModal}
   <div class="modal" transition:fly>
-    <form>
+    <form onsubmit={submitPasswordChange}>
       <h1>Change Password</h1>
-      
 
       <div class="newpass">
-
         <label for="old-password">Old Password</label>
         <input
           type="password"
           id="old-password"
           placeholder="Enter your old password"
+          bind:value={old_password}
         />
 
         <label for="new-password">New Password</label>
@@ -116,6 +126,7 @@
           type="password"
           id="new-password"
           placeholder="Enter new password"
+          bind:value={new_password}
         />
 
         <label for="confirm-password">Confirm Password</label>
@@ -123,6 +134,7 @@
           type="password"
           id="confirm-password"
           placeholder="Confirm your new password"
+          bind:value={confirm_password}
         />
       </div>
 
@@ -143,12 +155,12 @@
     background-color: #f44336;
     color: white;
     border: none;
-    padding: 0.8rem;
-    font-size: 1rem;
+    padding: 0.6rem;
+    font-size: 0.9rem;
     cursor: pointer;
-    border-radius: 5px;
+    border-radius: 4px;
     transition: background-color 0.3s ease;
-    margin-bottom: 2rem;
+    margin-top: 1rem; /* Added gap between change password and logout */
   }
 
   .logout:hover {
@@ -156,25 +168,35 @@
   }
 
   .container {
-    width: 100%;
-    height: 92.5vh;
+    width: 80%; /* Reduced width */
+    height: auto;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin: 0 auto; /* Centers the container horizontally */
+    border: 1px solid #ccc; /* Border around the container */
+    border-radius: 8px; /* Rounded corners for the border */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Optional shadow for better visual */
+    background-color: #fff; /* White background */
   }
 
   .information {
     display: flex;
     flex-direction: column;
+    gap: 1rem;
   }
 
   label {
-    font-size: 1rem;
+    font-size: 0.9rem;
     color: #444;
     font-weight: bold;
   }
 
   #changepass {
-    padding: 0.8rem 2rem;
-    border-radius: 5px;
-    font-size: 1rem;
+    padding: 0.6rem 1.8rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
     border: none;
     cursor: pointer;
     transition: background-color 0.3s ease;
@@ -184,8 +206,7 @@
     background-color: gray;
   }
 
-
-// MODAL STYLE  
+  // MODAL STYLE
   .modal {
     position: fixed;
     inset: 0;
@@ -207,12 +228,7 @@
   }
 
   input:focus {
-    border-color: #007BFF;
-  }
-
-  .button {
-    display: flex;
-    justify-content: center;
+    border-color: #007bff;
   }
 
   form {
