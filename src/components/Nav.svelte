@@ -1,5 +1,6 @@
 <script lang="ts">
   import { link, location } from "svelte-spa-router";
+  import mapMarker from "../assets/icon.png";
   import {
     Home,
     Calendar,
@@ -12,7 +13,7 @@
 </script>
 
 <nav>
-  <h1>iTrack</h1>
+  <h1 id="title"><img src={mapMarker} alt="Map Marker" /> iTrack</h1>
   <a href="/home" use:link class={activePage === "/home" ? "active" : ""}>
     <Home size="24" color={activePage === "/home" ? "var(--accent)" : "#333"} />
     <p>Home</p>
@@ -132,5 +133,17 @@
   #profile {
     margin-top: auto;
     margin-bottom: 2rem;
+  }
+
+  #title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 2.5rem;
+
+    img {
+      width: 4rem;
+      height: 4rem;
+    }
   }
 </style>
