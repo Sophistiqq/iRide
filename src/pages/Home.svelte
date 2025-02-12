@@ -68,7 +68,7 @@
       eventSource.close();
     }
 
-    eventSource = new EventSource("http://localhost:3000/events");
+    eventSource = new EventSource("http://192.168.1.31:3000/events");
 
     let updateTimeout: number;
     eventSource.onmessage = (event) => {
