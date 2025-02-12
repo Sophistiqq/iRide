@@ -3,6 +3,9 @@
   import { logout } from "../lib/auth";
   import { fly } from "svelte/transition";
   import { toast } from "../lib/Toast";
+  import { CircleUserRound, Eye, EyeOff, LockKeyhole } from "lucide-svelte";
+  let show_password = $state(false);
+
   type User = {
     fullname: string;
     username: string;
@@ -24,6 +27,32 @@
   onMount(() => {
     getData();
   });
+
+  let show_new_password = $state(false);
+  let show_confirm_password = $state(false);
+  let show_old_password = $state(false);
+
+  function togglePasswordVisibility(
+    field: "new_password" | "old_password" | "confirm_password",
+  ) {
+    const input = document.getElementById(field) as HTMLInputElement;
+    if (field === "new_password") {
+      input.type = show_new_password ? "password" : "text";
+      show_new_password
+        ? (show_new_password = false)
+        : (show_new_password = true);
+    } else if (field === "confirm_password") {
+      input.type = show_confirm_password ? "password" : "text";
+      show_confirm_password
+        ? (show_confirm_password = false)
+        : (show_confirm_password = true);
+    } else if (field === "old_password") {
+      input.type = show_old_password ? "password" : "text";
+      show_old_password
+        ? (show_old_password = false)
+        : (show_old_password = true);
+    }
+  }
 
   async function getData() {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -113,36 +142,80 @@
       <h1>Change Password</h1>
 
       <div class="newpass">
-        <label for="old-password">Old Password</label>
-        <input
-          type="password"
-          id="old-password"
-          placeholder="Enter your old password"
-          bind:value={old_password}
-        />
+        <label for="old_password">Old Password</label>
+        <div class="inputfield">
+          <LockKeyhole size="20" />
+          <input
+            type="password"
+            id="old_password"
+            placeholder="Enter your old password"
+            bind:value={old_password}
+          />
+          {#if show_old_password}
+            <Eye
+              size="24"
+              onclick={() => togglePasswordVisibility("old_password")}
+            />
+          {:else}
+            <EyeOff
+              size="24"
+              onclick={() => togglePasswordVisibility("old_password")}
+            />
+          {/if}
+        </div>
 
-        <label for="new-password">New Password</label>
-        <input
-          type="password"
-          id="new-password"
-          placeholder="Enter new password"
-          bind:value={new_password}
-        />
+        <label for="new_password">New Password</label>
+        <div class="inputfield">
+          <LockKeyhole size="20" />
+          <input
+            type="password"
+            id="new_password"
+            placeholder="Enter new password"
+            bind:value={new_password}
+          />
+          {#if show_new_password}
+            <Eye
+              size="24"
+              onclick={() => togglePasswordVisibility("new_password")}
+            />
+          {:else}
+            <EyeOff
+              size="24"
+              onclick={() => togglePasswordVisibility("new_password")}
+            />
+          {/if}
+        </div>
 
-        <label for="confirm-password">Confirm Password</label>
-        <input
-          type="password"
-          id="confirm-password"
-          placeholder="Confirm your new password"
-          bind:value={confirm_password}
-        />
-      </div>
+        <label for="confirm_password">Confirm Password</label>
+        <div class="inputfield">
+          <LockKeyhole size="20" />
+          <input
+            type="password"
+            id="confirm_password"
+            placeholder="Confirm your new password"
+            bind:value={confirm_password}
+          />
+          {#if show_confirm_password}
+            <Eye
+              size="24"
+              onclick={() => togglePasswordVisibility("confirm_password")}
+            />
+          {:else}
+            <EyeOff
+              size="24"
+              onclick={() => togglePasswordVisibility("confirm_password")}
+            />
+          {/if}
+        </div>
 
-      <div class="buttons">
-        <button type="button" class="cancel" onclick={() => (showModal = false)}
-          >Cancel</button
-        >
-        <button type="submit" class="submit">Submit</button>
+        <div class="buttons">
+          <button
+            type="button"
+            class="cancel"
+            onclick={() => (showModal = false)}>Cancel</button
+          >
+          <button type="submit" class="submit">Submit</button>
+        </div>
       </div>
     </form>
   </div>
@@ -251,12 +324,6 @@
     color: #333;
   }
 
-  .newpass {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-
   label {
     font-size: 1rem;
     color: #444;
@@ -309,5 +376,26 @@
 
   .submit:hover {
     background-color: #0056b3;
+  }
+
+  .inputfield {
+    display: flex;
+    // border: 1px solid red;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1.5rem;
+    padding-inline: 0.5rem;
+    &:focus-within {
+      border: 1px solid var(--accent);
+      border-radius: 0.5rem;
+    }
+    input {
+      margin: 0;
+      width: 100%;
+      border: none;
+      background: transparent;
+    }
   }
 </style>
