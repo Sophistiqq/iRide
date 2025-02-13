@@ -13,7 +13,6 @@
     value: DateRange;
     label: string;
   }
-
   // State management using proper Svelte 5 runes
   let activetab = $state<Tab>("all");
   let searchquery = $state("");
@@ -86,12 +85,11 @@
           <Search size={20} class="search-icon" />
           <input
             type="text"
-            placeholder="Search units..."
+            placeholder="Search a unit..."
             bind:value={searchquery}
             onkeydown={(e) => e.key === "Enter" && handlesearch()}
           />
         </div>
-        <button class="search-button" onclick={handlesearch}>Search</button>
       </div>
 
       <div class="date-picker">
@@ -131,7 +129,7 @@
 
   <div class="content">
     {#if activetab === "all"}
-      <AllUnits />
+      <AllUnits {searchquery} />
     {:else if activetab === "route"}
       <p>Showing route history</p>
     {:else}
@@ -233,25 +231,6 @@
           &:focus {
             outline: none;
           }
-        }
-      }
-
-      .search-button {
-        padding: 0.75rem 1.5rem;
-        background-color: var(--primary);
-        color: white;
-        border: none;
-        border-radius: 0.375rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
-
-        &:hover {
-          background-color: var(--primary-hover);
-        }
-
-        &:active {
-          transform: translateY(1px);
         }
       }
     }

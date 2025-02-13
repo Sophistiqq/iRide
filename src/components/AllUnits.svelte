@@ -9,7 +9,7 @@
     longitude: number;
     timestamp: string;
   }
-
+  const { searchquery } = $props();
   // State
   let history: Location[] = $state([]);
   let loading = $state(true);
@@ -51,12 +51,33 @@
       loading = false;
     }
   }
+  // Update the effect to reset pagination when search changes
+  $effect(() => {
+    if (searchquery !== undefined) {
+      const filteredHistory = history.filter((unit) =>
+        unit.device_id.toLowerCase().includes(searchquery.toLowerCase()),
+      );
+      totalItems = filteredHistory.length;
+      // Reset to first page when search changes
+      currentPage = 1;
+    } else {
+      totalItems = history.length;
+    }
+  });
 
   function getPaginatedData() {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
 
-    let sortedData = [...history].sort((a, b) => {
+    // First, filter the data based on search query
+    let filteredData = searchquery
+      ? history.filter((unit) =>
+          unit.device_id.toLowerCase().includes(searchquery.toLowerCase()),
+        )
+      : history;
+
+    // Then sort the filtered data
+    let sortedData = [...filteredData].sort((a, b) => {
       const aValue = a[sortField];
       const bValue = b[sortField];
 
