@@ -53,8 +53,6 @@
 
     let updateTimeout: number;
     eventSource.onmessage = (event) => {
-      const parsed = JSON.parse(event.data);
-      console.log(parsed);
       if (updateTimeout) {
         window.clearTimeout(updateTimeout);
       }
@@ -102,9 +100,32 @@
       const position = { lat: data.latitude, lng: data.longitude };
       let marker = markersMap.get(data.device_id);
 
+      // Function to generate the InfoWindow content
+      const getContentString = (data: any) => {
+        return (
+          `<div style="font-family: Arial, sans-serif; font-size: 14px;" id="content">` +
+          `<h2 style="margin: 0; padding: 0;">${data.device_id}</h2>` +
+          `<div style="margin-top: 5px;">` +
+          `<b>Latitude:</b> ${data.latitude}<br>` +
+          `<b>Longitude:</b> ${data.longitude}<br>` +
+          `<b>Timestamp:</b> ${new Date(data.timestamp).toLocaleString()}<br>` +
+          `</div>` +
+          `</div>`
+        );
+      };
+
       if (marker) {
+        // Update the marker's position
         marker.position = position;
         (marker as any).myData = data;
+
+        // Update the InfoWindow content if it's currently open for this marker
+        if (
+          markerInfoWindow.getMap() &&
+          markerInfoWindow.getAnchor() === marker
+        ) {
+          markerInfoWindow.setContent(getContentString(data));
+        }
       } else {
         // Create an img element for the custom marker
         const markerImg = document.createElement("img");
@@ -121,18 +142,10 @@
         });
 
         (marker as any).myData = data;
-        const contentString =
-          `<div style="font-family: Arial, sans-serif; font-size: 14px;" id="content">` +
-          `<h2 style="margin: 0; padding: 0;">${data.device_id}</h2>` +
-          `<div style="margin-top: 5px;">` +
-          `<b>Latitude:</b> ${data.latitude}<br>` +
-          `<b>Longitude:</b> ${data.longitude}<br>` +
-          `<b>Timestamp:</b> ${new Date(data.timestamp).toLocaleString()}<br>` +
-          `</div>` +
-          `</div>`;
 
+        // Add a click listener to open the InfoWindow
         marker.addListener("click", () => {
-          markerInfoWindow.setContent(contentString);
+          markerInfoWindow.setContent(getContentString(data));
           markerInfoWindow.open(map, marker);
         });
 
