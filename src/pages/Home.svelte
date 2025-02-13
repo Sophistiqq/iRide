@@ -121,8 +121,8 @@
 
         // Update the InfoWindow content if it's currently open for this marker
         if (
-          markerInfoWindow.getMap() &&
-          markerInfoWindow.getAnchor() === marker
+          markerInfoWindow.get("map") &&
+          markerInfoWindow.get("anchor") === marker
         ) {
           markerInfoWindow.setContent(getContentString(data));
         }
