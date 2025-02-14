@@ -142,44 +142,35 @@
   .container {
     width: 100%;
     min-height: 100vh;
-    padding: 1rem;
     background-color: var(--background);
+    padding-inline: 1rem;
   }
 
   .header {
-    margin-bottom: 1rem;
-
     .title {
-      font-size: 1.75rem;
+      font-size: 1.25rem;
       font-weight: 600;
       color: #1a1a1a;
-      margin-bottom: 0.5rem;
     }
 
     .description {
       color: #666;
-      font-size: 1rem;
     }
   }
 
   .controls-container {
-    background-color: white;
-    padding: 1rem;
+    padding-block: 1rem;
     border-radius: 0.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   }
 
   .tabs {
     display: flex;
     gap: 1rem;
-    margin-bottom: 1.5rem;
-    border-bottom: 1px solid #eee;
     padding-bottom: 1rem;
 
     .tab-button {
       padding: 0.75rem 1.25rem;
       border: none;
-      background-color: #f5f5f5;
       color: #666;
       cursor: pointer;
       border-radius: 0.375rem;
@@ -294,10 +285,7 @@
   }
 
   .content {
-    margin-top: 2rem;
-    padding: 1.5rem;
     background-color: white;
     border-radius: 0.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   }
 </style>

@@ -99,7 +99,6 @@
   box-sizing: border-box;
   font-family: "Montserrat", sans-serif;
   color: var(--text);
-  user-select: none;
 }
 
 body {
@@ -114,4 +113,3 @@ h5,
 h6 {
   font-family: "Archivo Black", sans-serif;
 }
-

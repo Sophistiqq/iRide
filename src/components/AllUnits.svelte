@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { ArrowUpDown, Loader2, RefreshCcwIcon } from "lucide-svelte";
-
+  import { data } from "./fakedata";
   interface Location {
     id: string;
     device_id: string;
@@ -39,7 +39,7 @@
       const res = await fetch("http://localhost:3000/unit-history");
       if (!res.ok) throw new Error("Failed to fetch data");
 
-      const data = await res.json();
+      // const data = await res.json();
       history = data.locations.map((location: Location) => ({
         ...location,
         timestamp: new Date(location.timestamp).toLocaleString(),
@@ -270,7 +270,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
   }
 
   .pagination-controls {
@@ -293,7 +293,6 @@
     justify-content: center;
     gap: 0.5rem;
     padding: 2rem;
-    background-color: white;
     border-radius: 0.5rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   }
@@ -313,15 +312,16 @@
 
   .table-container {
     overflow-x: auto;
+    overflow-y: auto;
+    max-height: 50vh;
     background-color: white;
-    border-radius: 0.5rem;
+    border-radius: 0.25rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   }
 
   table {
     width: 100%;
     border-collapse: collapse;
-
     th,
     td {
       padding: 0.75rem 1rem;
@@ -330,12 +330,12 @@
     }
 
     th {
-      background-color: #f8f9fa;
+      background-color: #e7e7ea;
       font-weight: 600;
     }
 
     tr:hover {
-      background-color: #f8f9fa;
+      background-color: #d7d7da;
     }
   }
 
@@ -400,7 +400,6 @@
 
     .page-button {
       padding: 0.5rem 0.75rem;
-      background-color: white;
       border: 1px solid #ddd;
       border-radius: 0.25rem;
       cursor: pointer;
