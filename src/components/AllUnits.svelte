@@ -204,7 +204,6 @@
               <td>
                 <div class="actions">
                   <button class="action-button">Details</button>
-                  <button class="action-button">History</button>
                 </div>
               </td>
             </tr>
@@ -264,6 +263,7 @@
 <style lang="scss">
   .all-units {
     width: 100%;
+    background-color: var(--background);
   }
 
   .header {
@@ -313,10 +313,16 @@
   .table-container {
     overflow-x: auto;
     overflow-y: auto;
-    max-height: 50vh;
+    height: 60vh;
     background-color: white;
     border-radius: 0.25rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  @media (max-width: 768px) {
+    .table-container {
+      height: auto;
+    }
   }
 
   table {

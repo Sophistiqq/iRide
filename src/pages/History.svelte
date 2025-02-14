@@ -64,68 +64,68 @@
   <div class="header">
     <h2 class="title">Unit History</h2>
     <p class="description">View the unit's logged location and route.</p>
-  </div>
 
-  <header class="controls-container">
-    <div class="tabs">
-      {#each tabs as tab}
-        <button
-          class="tab-button"
-          class:active={activetab === tab.id}
-          onclick={() => handletabclick(tab.id)}
-        >
-          {tab.label}
-        </button>
-      {/each}
-    </div>
-
-    <div class="controls">
-      <div class="search">
-        <div class="search-bar">
-          <Search size={20} class="search-icon" />
-          <input
-            type="text"
-            placeholder="Search a unit..."
-            bind:value={searchquery}
-            onkeydown={(e) => e.key === "Enter" && handlesearch()}
-          />
-        </div>
+    <div class="controls-container">
+      <div class="tabs">
+        {#each tabs as tab}
+          <button
+            class="tab-button"
+            class:active={activetab === tab.id}
+            onclick={() => handletabclick(tab.id)}
+          >
+            {tab.label}
+          </button>
+        {/each}
       </div>
 
-      <div class="date-picker">
-        <div class="select-wrapper">
-          <Calendar size={20} class="calendar-icon" />
-          <select
-            bind:value={selecteddaterange}
-            onchange={handledaterangechange}
-            class="date-select"
-          >
-            {#each daterangeoptions as option}
-              <option value={option.value}>{option.label}</option>
-            {/each}
-          </select>
-        </div>
-
-        {#if selecteddaterange === "custom"}
-          <div class="custom-date-inputs">
+      <div class="controls">
+        <div class="search">
+          <div class="search-bar">
+            <Search size={20} class="search-icon" />
             <input
-              type="date"
-              bind:value={customstartdate}
-              onchange={handlecustomdatechange}
-              class="date-input"
-            />
-            <span class="date-separator">to</span>
-            <input
-              type="date"
-              bind:value={customenddate}
-              onchange={handlecustomdatechange}
-              class="date-input"
+              type="text"
+              placeholder="Search a unit..."
+              bind:value={searchquery}
+              onkeydown={(e) => e.key === "Enter" && handlesearch()}
             />
           </div>
-        {/if}
+        </div>
+
+        <div class="date-picker">
+          <div class="select-wrapper">
+            <Calendar size={20} class="calendar-icon" />
+            <select
+              bind:value={selecteddaterange}
+              onchange={handledaterangechange}
+              class="date-select"
+            >
+              {#each daterangeoptions as option}
+                <option value={option.value}>{option.label}</option>
+              {/each}
+            </select>
+          </div>
+
+          {#if selecteddaterange === "custom"}
+            <div class="custom-date-inputs">
+              <input
+                type="date"
+                bind:value={customstartdate}
+                onchange={handlecustomdatechange}
+                class="date-input"
+              />
+              <span class="date-separator">to</span>
+              <input
+                type="date"
+                bind:value={customenddate}
+                onchange={handlecustomdatechange}
+                class="date-input"
+              />
+            </div>
+          {/if}
+        </div>
       </div>
     </div>
-  </header>
+  </div>
 
   <div class="content">
     {#if activetab === "all"}
@@ -147,9 +147,13 @@
   }
 
   .header {
+    display: flex;
+    flex-direction: column;
+    padding-block: 1rem;
     .title {
       font-size: 1.25rem;
       font-weight: 600;
+      line-height: 2;
       color: #1a1a1a;
     }
 
