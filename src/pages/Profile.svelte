@@ -4,6 +4,8 @@
   import { fly } from "svelte/transition";
   import { toast } from "../lib/Toast";
   import { CircleUserRound, Eye, EyeOff, LockKeyhole } from "lucide-svelte";
+  import { API_URL } from "../lib/ServerAPI";
+  const SERVER_URL = import.meta.env.VITE_SERVER_API_URL;
   let show_password = $state(false);
 
   type User = {
@@ -57,7 +59,7 @@
   async function getData() {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
     const response = await fetch(
-      `http://192.168.1.31:3000/page/user-data${user.username}`,
+      `${SERVER_URL}/page/user-data${user.username}`,
     );
     const data = await response.json();
     user_data = data.user;
@@ -83,18 +85,15 @@
     }
 
     console.log(username, old_password, new_password, confirm_password);
-    const res = await fetch(
-      "https://ipick-server.onrender.com/change-password",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username,
-          old_password,
-          new_password,
-        }),
-      },
-    );
+    const res = await fetch(`${API_URL}/change-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username,
+        old_password,
+        new_password,
+      }),
+    });
     const data = await res.json();
     if (data.status === "success") {
       toast(data.message, 2000, data.status);

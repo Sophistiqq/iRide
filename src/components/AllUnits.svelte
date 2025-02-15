@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { ArrowUpDown, Loader2, RefreshCcwIcon } from "lucide-svelte";
-  import { data } from "./fakedata";
+  export const API_URL = import.meta.env.VITE_SERVER_API_URL;
   interface Location {
     id: string;
     device_id: string;
@@ -30,16 +30,16 @@
 
   onMount(() => {
     getHistoryAllUnits();
+    console.log(API_URL);
   });
 
   async function getHistoryAllUnits() {
     try {
       loading = true;
       error = null;
-      const res = await fetch("http://localhost:3000/unit-history");
+      const res = await fetch(`${API_URL}/unit-history`);
       if (!res.ok) throw new Error("Failed to fetch data");
-
-      // const data = await res.json();
+      const data = await res.json();
       history = data.locations.map((location: Location) => ({
         ...location,
         timestamp: new Date(location.timestamp).toLocaleString(),
