@@ -141,9 +141,9 @@
 <style lang="scss">
   .container {
     width: 100%;
-    min-height: 100vh;
     background-color: var(--background);
     padding-inline: 1rem;
+    height: 100svh;
   }
 
   .header {

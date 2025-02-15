@@ -6,6 +6,7 @@
   let map: google.maps.Map;
   let eventSource: EventSource | null = null;
   let markerInfoWindow: google.maps.InfoWindow;
+  const SERVER_URL = import.meta.env.VITE_SERVER_API_URL;
   const markers = writable(
     new Map<string, google.maps.marker.AdvancedMarkerElement>(),
   );
@@ -33,10 +34,15 @@
       zoomControl: false,
       streetViewControl: false,
       rotateControl: true,
-      //mapTypeControl: false,
+      mapTypeControl: true,
+      mapTypeControlOptions: {
+        style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+        mapTypeIds: ["roadmap", "satellite", "terrain", "hybrid"],
+      },
       mapId: "f1b7b3e3b1b3b7f",
     });
-
+    const trafficLayer = new google.maps.TrafficLayer();
+    trafficLayer.setMap(map);
     // Initialize InfoWindow after map is created
     markerInfoWindow = new InfoWindow();
 
@@ -49,7 +55,7 @@
       eventSource.close();
     }
 
-    eventSource = new EventSource("https://ipick-server.onrender.com/events");
+    eventSource = new EventSource(`${SERVER_URL}/events`);
 
     let updateTimeout: number;
     eventSource.onmessage = (event) => {
