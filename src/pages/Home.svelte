@@ -191,7 +191,8 @@
   @media (max-width: 768px) {
     .container {
       width: 100vw;
-      height: 90vh;
+      height: 92.5svh;
+      margin-bottom: 7.5vh;
     }
     #map {
       height: 100%;

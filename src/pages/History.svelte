@@ -292,4 +292,49 @@
     background-color: white;
     border-radius: 0.5rem;
   }
+
+  @media (max-width: 768px) {
+    .container {
+      padding-inline: 0.5rem;
+      height: 100svh;
+      overflow-y: auto;
+    }
+    .header {
+      .title {
+        font-size: 1rem;
+      }
+    }
+
+    .controls-container {
+      padding-block: 0.5rem;
+    }
+
+    .tabs {
+      padding-bottom: 0.5rem;
+      .tab-button {
+        flex: 1;
+        padding: 0.25rem 0.4rem;
+      }
+    }
+
+    .controls {
+      gap: 1rem;
+    }
+
+    .search {
+      .search-bar {
+        padding: 0.25rem 0.4rem;
+      }
+    }
+
+    .date-picker {
+      .select-wrapper {
+        padding: 0.25rem 0.5rem;
+      }
+
+      .custom-date-inputs {
+        padding: 0.25rem;
+      }
+    }
+  }
 </style>

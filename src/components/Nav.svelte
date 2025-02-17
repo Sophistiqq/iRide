@@ -52,23 +52,31 @@
     min-width: max-content;
     flex-direction: column;
     padding-inline: 1.5rem;
-    height: 100vh;
+    height: 100%;
   }
 
   @media (max-width: 768px) {
     nav {
+      position: fixed;
+      bottom: 0;
       flex-direction: row;
       justify-content: space-around;
       align-items: center;
       height: 7.5svh;
-      width: 100vw;
+      width: 100svw;
       padding-inline: 0;
+      font-size: 0.75rem;
+      padding-block: 0.5rem;
+      padding-bottom: 1rem;
       h1 {
         display: none;
       }
       a {
+        flex: 1;
         flex-direction: column;
-        gap: 0;
+        p {
+          display: none;
+        }
       }
       #profile {
         margin-block: auto;

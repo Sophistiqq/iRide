@@ -65,6 +65,7 @@
     width: 100vw;
     max-width: 100vw;
     gap: 0.5rem;
+    height: 100svh;
   }
   .loading-container {
     position: fixed;
