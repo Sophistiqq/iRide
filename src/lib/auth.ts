@@ -64,8 +64,8 @@ export async function checkAuth(shouldRedirect = true): Promise<boolean> {
         isAuthenticated: true,
         isInitialized: true
       });
-      if (shouldRedirect && window.location.href !== '#/home') {
-        push('/home');
+      if (shouldRedirect && window.location.href !== '#/map') {
+        push('/map');
       }
       return true;
     } else {
@@ -170,7 +170,7 @@ export async function register(username: string, password: string, fullname: str
         isAuthenticated: true,
         isInitialized: true
       });
-      push('/home');
+      push('/map');
       return data.user;
     } else {
       throw new Error(data.error || 'Registration failed');
@@ -198,7 +198,7 @@ export function guardAuthenticatedRoute(path: string): void {
 export function guardPublicRoute(path: string): void {
   const token = localStorage.getItem('auth_token');
   if (token && (path === '/login' || path === '/register' || path === '/')) {
-    push('/home');
+    push('/map');
   }
 }
 

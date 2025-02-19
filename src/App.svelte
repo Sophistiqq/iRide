@@ -3,7 +3,7 @@
   import Router, { push } from "svelte-spa-router";
   import Register from "./pages/Register.svelte";
   import Login from "./pages/Login.svelte";
-  import Home from "./pages/Home.svelte";
+  import Map from "./pages/Map.svelte";
   import History from "./pages/History.svelte";
   import UnitManagement from "./pages/UnitManagement.svelte";
   import Profile from "./pages/Profile.svelte";
@@ -15,11 +15,10 @@
   const routes = {
     "/": Login,
     "/register": Register,
-    //"/home": Home,
     "/history": History,
     "/unit-management": UnitManagement,
     "/profile": Profile,
-    "/home": Home,
+    "/map": Map,
   };
 
   // Subscribe to route changes
@@ -31,7 +30,7 @@
         (path === "/" || path === "/login" || path === "/register")
       ) {
         push("/home");
-      } else if (!$authStore.isAuthenticated && path === "/home") {
+      } else if (!$authStore.isAuthenticated && path === "/map") {
         push("/");
       }
     }

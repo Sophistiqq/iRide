@@ -1,15 +1,15 @@
 <script lang="ts">
   import { link, location } from "svelte-spa-router";
   import mapMarker from "../assets/icon.png";
-  import { Home, Calendar, Bus, CircleUserRound } from "lucide-svelte";
+  import { Map, Calendar, Bus, CircleUserRound } from "lucide-svelte";
   $: activePage = $location;
 </script>
 
 <nav>
   <h1 id="title"><img src={mapMarker} alt="Map Marker" /> iTrack</h1>
-  <a href="/home" use:link class={activePage === "/home" ? "active" : ""}>
-    <Home size="24" color={activePage === "/home" ? "var(--accent)" : "#333"} />
-    <p>Home</p>
+  <a href="/Map" use:link class={activePage === "/map" ? "active" : ""}>
+    <Map size="24" color={activePage === "/map" ? "var(--accent)" : "#333"} />
+    <p>Map</p>
   </a>
   <a href="/history" use:link class={activePage === "/history" ? "active" : ""}>
     <Calendar
