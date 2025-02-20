@@ -15,6 +15,7 @@
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
     "@tsconfig/svelte": "^5.0.4",
+    "@types/fusioncharts": "^3.12.2",
     "@types/google.maps": "^3.58.1",
     "@types/node": "^22.13.1",
     "autoprefixer": "^10.4.20",
@@ -35,8 +36,10 @@
     "@fontsource/montserrat": "^5.1.1",
     "@fontsource/outfit": "^5.1.1",
     "@googlemaps/js-api-loader": "^1.16.8",
+    "fusioncharts": "^4.1.2",
     "lucide-svelte": "^0.474.0",
     "path": "^0.12.7",
+    "svelte-fusioncharts": "^1.1.0",
     "svelte-spa-router": "^4.0.1"
   }
 }

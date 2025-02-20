@@ -6,6 +6,7 @@
   import Map from "./pages/Map.svelte";
   import History from "./pages/History.svelte";
   import UnitManagement from "./pages/UnitManagement.svelte";
+  import Dashboard from "./pages/Dashboard.svelte";
   import Profile from "./pages/Profile.svelte";
   import { onMount } from "svelte";
   import { location } from "svelte-spa-router";
@@ -17,6 +18,7 @@
     "/register": Register,
     "/history": History,
     "/unit-management": UnitManagement,
+    "/dashboard": Dashboard,
     "/profile": Profile,
     "/map": Map,
   };
