@@ -34,6 +34,13 @@
   let show_confirm_password = $state(false);
   let show_old_password = $state(false);
 
+  let ChangePasswordModal = $state(false); // For password change modal
+  let EditProfileModal = $state(false); // For edit profile modal
+  let editFullname = $state("");
+  let editUsername = $state("");
+  let editEmail = $state("");
+  let editMobileNumber = $state("");
+
   function togglePasswordVisibility(
     field: "new_password" | "old_password" | "confirm_password",
   ) {
@@ -68,7 +75,7 @@
 
   // Function to handle the password change request
   async function requestPasswordChange() {
-    showModal = true;
+    ChangePasswordModal = true;
   }
 
   let username = $state("");
@@ -97,45 +104,59 @@
     const data = await res.json();
     if (data.status === "success") {
       toast(data.message, 2000, data.status);
-      showModal = false;
+      ChangePasswordModal = false;
     } else {
       toast(data.message, 2000, data.status);
     }
   }
 
-  let showModal = $state(false);
+  async function submitProfileEdit(e: Event) {
+    e.preventDefault();
+    user_data = {
+      fullname: editFullname,
+      username: editUsername,
+      email: editEmail,
+      mobile_number: editMobileNumber,
+      created_at: user_data.created_at,
+      updated_at: new Date().toISOString(),
+    };
+
+    EditProfileModal = true;
+  }
 </script>
 
 <div class="container">
-  <h1>Settings</h1>
+  <div class="profile">
+    <h1>Settings</h1>
 
-  <div class="information">
-    <label for="fullname">Full Name</label>
-    <input type="text" id="fullname" bind:value={user_data.fullname} readonly />
+    <div class="information">
+      <h1>{user_data.fullname}</h1>
+      <p>{user_data.username}</p>
+      <p>{user_data.email}</p>
+      <p>{user_data.mobile_number}</p>
 
-    <label for="username">Username</label>
-    <input type="text" id="username" bind:value={user_data.username} readonly />
-    <label for="email">Email</label>
-    <input type="email" id="email" bind:value={user_data.email} readonly />
-    <label for="mobile_number">Mobile Number</label>
-    <input
-      type="text"
-      id="mobile_number"
-      bind:value={user_data.mobile_number}
-      readonly
-    />
+      <div class="changepassword">
+        <button id="changepass" onclick={requestPasswordChange}
+          >Change password</button
+        >
 
-    <button id="changepass" onclick={requestPasswordChange}
-      >Request Password Change</button
-    >
+        <button id="editprof" onclick={() => (EditProfileModal = true)}
+          >Edit your profile</button
+        >
 
-    <div class="logbutton">
-      <button class="logout" onclick={logout}>Logout</button>
+        <div class="logout">
+          <button class="logout" onclick={logout}>Logout</button>
+        </div>
+      </div>
     </div>
+  </div>
+
+  <div class="about">
+    <h1>About us</h1>
   </div>
 </div>
 
-{#if showModal}
+{#if ChangePasswordModal}
   <div class="modal" transition:fly>
     <form onsubmit={submitPasswordChange}>
       <h1>Change Password</h1>
@@ -211,7 +232,7 @@
           <button
             type="button"
             class="cancel"
-            onclick={() => (showModal = false)}>Cancel</button
+            onclick={() => (ChangePasswordModal = false)}>Cancel</button
           >
           <button type="submit" class="submit">Submit</button>
         </div>
@@ -220,62 +241,129 @@
   </div>
 {/if}
 
+{#if EditProfileModal}
+  <div class="modal" transition:fly>
+    <form onsubmit={submitProfileEdit}>
+      <h1>Edit Profile</h1>
+
+      <div class="inputfield">
+        <label for="fullname">Full Name</label>
+        <input
+          type="text"
+          id="fullname"
+          bind:value={editFullname}
+          placeholder="Enter full name"
+        />
+      </div>
+
+      <div class="inputfield">
+        <label for="username">Username</label>
+        <input
+          type="text"
+          id="username"
+          bind:value={editUsername}
+          placeholder="Enter username"
+        />
+      </div>
+
+      <div class="inputfield">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          bind:value={editEmail}
+          placeholder="Enter email"
+        />
+      </div>
+
+      <div class="inputfield">
+        <label for="mobile_number">Mobile Number</label>
+        <input
+          type="text"
+          id="mobile_number"
+          bind:value={editMobileNumber}
+          placeholder="Enter mobile number"
+        />
+      </div>
+
+      <div class="buttons">
+        <button
+          type="button"
+          class="cancel"
+          onclick={() => (EditProfileModal = false)}>Cancel</button
+        >
+        <button type="submit" class="submit">Save</button>
+      </div>
+    </form>
+  </div>
+{/if}
+
 <style lang="scss">
-  .logout {
-    display: block;
-    width: 100%;
-    background-color: #f44336;
-    color: white;
-    border: none;
-    padding: 0.6rem;
-    font-size: 0.9rem;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
-    margin-top: 1rem; /* Added gap between change password and logout */
-  }
-
-  .logout:hover {
-    background-color: #e53935;
-  }
-
+  /* Profile Section */
   .container {
-    width: 80%; /* Reduced width */
-    height: auto;
-    padding: 2rem;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-    margin: 0 auto; /* Centers the container horizontally */
-    border: 1px solid #ccc; /* Border around the container */
-    border-radius: 8px; /* Rounded corners for the border */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Optional shadow for better visual */
-    background-color: #fff; /* White background */
+    height: 100%;
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
   }
 
   .information {
     display: flex;
+    align-items: center;
     flex-direction: column;
+    justify-content: center;
     gap: 1rem;
   }
 
-  label {
-    font-size: 0.9rem;
-    color: #444;
-    font-weight: bold;
+  .profile {
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd; /* Border to separate profile */
+    border-radius: 8px;
+    background-color: #f9f9f9; /* Light background */
+  }
+
+  .profile h1 {
+    font-size: 24px;
+  }
+
+  .about {
+    padding: 20px;
+    border: 1px solid #ddd; /* Border to separate about section */
+    border-radius: 8px;
+    background-color: #f9f9f9; /* Light background */
+    margin-top: 20px;
+  }
+
+  .about h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+
+  #changepass,
+  #editprof {
+    margin: 10px 0;
+    padding: 0.8rem 1rem;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--primary);
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    &:active {
+      background-color: var(--primary-active);
+    }
+
+    &:hover {
+      background-color: var(--primary);
+      transform: scale(1.05); /* Slight scale effect for hover */
+    }
   }
 
   #changepass {
-    padding: 0.6rem 1.8rem;
-    border-radius: 4px;
-    font-size: 0.9rem;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-
-  #changepass:hover {
-    background-color: gray;
+    margin-right: 0.5rem;
   }
 
   // MODAL STYLE
@@ -314,31 +402,12 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
-  }
-
-  h1 {
-    font-size: 1.8rem;
-    margin-bottom: 1rem;
-    text-align: center;
-    color: #333;
-  }
-
-  label {
-    font-size: 1rem;
-    color: #444;
-  }
-
-  input {
-    padding: 0.8rem;
-    font-size: 1rem;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    transition: border-color 0.3s ease;
-    outline: none;
-  }
-
-  input:focus {
-    border-color: #007bff;
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      text-align: center;
+      color: #333;
+    }
   }
 
   .buttons {
@@ -395,6 +464,28 @@
       width: 100%;
       border: none;
       background: transparent;
+    }
+  }
+
+  .logout {
+    background-color: #d32f2f; /* Red color for logout */
+    color: white;
+    padding: 0.3rem;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition:
+      background-color 0.3s,
+      transform 0.2s ease-in-out;
+
+    &:hover {
+      background-color: #c62828; /* Darker red on hover */
+      transform: scale(1.05); /* Slight scale effect for hover */
+    }
+
+    &.logout {
+      display: flex;
+      justify-content: center;
     }
   }
 </style>
