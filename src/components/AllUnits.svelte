@@ -115,6 +115,19 @@
 
   let detailsModal = $state(false);
   let selectedUnit = $state<Location | null>(null);
+
+  // Close the modal on escape key press and when clicking outside the modal
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      detailsModal = false;
+    }
+  });
+
+  window.addEventListener("click", (e) => {
+    if (e.target === e.currentTarget) {
+      detailsModal = false;
+    }
+  });
 </script>
 
 <div class="all-units">
