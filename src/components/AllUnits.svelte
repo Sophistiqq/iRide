@@ -114,6 +114,7 @@
   }
 
   let detailsModal = $state(false);
+  let selectedUnit = $state<Location | null>(null);
 </script>
 
 <div class="all-units">
@@ -210,7 +211,11 @@
                 <div class="actions">
                   <button
                     class="action-button"
-                    onclick={() => (detailsModal = true)}>Details</button
+                    onclick={() => {
+                      selectedUnit = unit;
+                      detailsModal = true;
+                      console.log(selectedUnit);
+                    }}>Details</button
                   >
                 </div>
               </td>
@@ -270,7 +275,7 @@
 
 {#if detailsModal}
   <div class="modal">
-    <DeviceDetails />
+    <DeviceDetails {selectedUnit} />
   </div>
 {/if}
 
