@@ -1,7 +1,8 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { ArrowUpDown, Loader2, RefreshCcwIcon } from "lucide-svelte";
-  import { data } from "./fakedata";
+  import DeviceDetails from "./DeviceDetails.svelte";
+  //import { data } from "./fakedata";
   export const API_URL = import.meta.env.VITE_SERVER_API_URL;
   interface Location {
     id: string;
@@ -40,7 +41,7 @@
       error = null;
       const res = await fetch(`${API_URL}/unit-history`);
       if (!res.ok) throw new Error("Failed to fetch data");
-      //const data = await res.json();
+      const data = await res.json();
 
       history = data.locations.map((location: Location) => ({
         ...location,
@@ -111,6 +112,8 @@
   function openInMaps(lat: number, lng: number) {
     window.open(`https://www.google.com/maps?q=${lat},${lng}`, "_blank");
   }
+
+  let detailsModal = $state(false);
 </script>
 
 <div class="all-units">
@@ -205,7 +208,10 @@
               <td>{unit.timestamp}</td>
               <td>
                 <div class="actions">
-                  <button class="action-button">Details</button>
+                  <button
+                    class="action-button"
+                    onclick={() => (detailsModal = true)}>Details</button
+                  >
                 </div>
               </td>
             </tr>
@@ -261,6 +267,12 @@
     </div>
   {/if}
 </div>
+
+{#if detailsModal}
+  <div class="modal">
+    <DeviceDetails />
+  </div>
+{/if}
 
 <style lang="scss">
   .all-units {
@@ -447,5 +459,14 @@
     &:active {
       transform: scale(0.9);
     }
+  }
+  .modal {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
   }
 </style>

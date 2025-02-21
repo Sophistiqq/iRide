@@ -32,7 +32,7 @@
       center: { lat: 14.7289, lng: 121.1441 },
       zoom: 16,
       zoomControl: false,
-      streetViewControl: false,
+      streetViewControl: true,
       rotateControl: true,
       mapTypeControl: true,
       mapTypeControlOptions: {

@@ -44,8 +44,8 @@
 </script>
 
 <div class="container">
-  <h1>iTrack</h1>
   <form class="register-form" onsubmit={handleSubmit}>
+    <h1>iTrack</h1>
     <h3>Create Account</h3>
     <div class="input-container">
       <label for="username">Username</label>
@@ -158,17 +158,37 @@
       </div>
     </div>
   </form>
+  <div class="informercial">
+    <h1>Welcome to iTrack</h1>
+    <p>
+      Track your vehicles in real time with ease. Our system ensures accurate
+      location updates, efficient route planning, and seamless monitoring—all in
+      one place.
+    </p>
+  </div>
 </div>
 
 <style>
   .container {
     display: flex;
-    flex-direction: row-reverse;
-    justify-content: flex-end;
+    flex-direction: row;
+    justify-content: space-around;
     height: 100svh;
     width: 100vw;
     gap: 1.5rem;
-    h1 {
+  }
+
+  .register-form {
+    display: grid;
+    gap: 0rem 2rem;
+    grid-template-columns: 1fr 1fr;
+    padding: 6rem;
+    min-width: 30vw;
+    height: 100%;
+    box-shadow: 0 0 10px rgba(50, 50, 50, 0.2);
+    border-radius: 5px;
+
+    & h1 {
       font-size: 3.5em;
       font-weight: bold;
       background: linear-gradient(
@@ -184,26 +204,12 @@
       animation: textShine 4s cubic-bezier(0.6, 0.04, 0.98, 0.335) infinite
         alternate;
     }
-  }
-
-  .register-form {
-    /*display: flex;*/
-    /*flex-direction: column;*/
-    /*justify-content: center;*/
-    display: grid;
-    gap: 0rem 2rem;
-    grid-template-columns: 1fr 1fr;
-    padding: 6rem;
-    min-width: 30vw;
-    height: 100%;
-    box-shadow: 0 0 10px rgba(50, 50, 50, 0.2);
-    border-radius: 5px;
     h3 {
       grid-column: 1 / -1;
       margin-bottom: 1.5rem;
     }
     label {
-      font-size: 0.8rem;
+      font-size: 1rem;
     }
     button {
       padding: 0.5rem;
@@ -302,5 +308,9 @@
       padding: 0.5rem 2rem;
     }
     gap: 1rem;
+  }
+  .informercial {
+    display: flex;
+    flex-direction: column;
   }
 </style>
