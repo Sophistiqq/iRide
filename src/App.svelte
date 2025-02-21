@@ -31,7 +31,7 @@
         $authStore.isAuthenticated &&
         (path === "/" || path === "/login" || path === "/register")
       ) {
-        push("/home");
+        push("/dashboard");
       } else if (!$authStore.isAuthenticated && path === "/map") {
         push("/");
       }
