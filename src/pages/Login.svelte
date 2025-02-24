@@ -140,6 +140,9 @@
       align-items: center;
       width: 100vw;
     }
+    .login-form {
+      min-width: 80vw;
+    }
   }
 
   .inputfield {

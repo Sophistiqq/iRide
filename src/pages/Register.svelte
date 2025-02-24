@@ -175,6 +175,7 @@
     gap: 0rem 2rem;
     grid-template-columns: 1fr 1fr;
     padding: 6rem;
+    padding-inline: 2rem;
     min-width: 30vw;
     height: 100%;
     box-shadow: 0 0 10px rgba(50, 50, 50, 0.2);
