@@ -116,7 +116,7 @@ export async function login(username: string, password: string): Promise<User | 
       });
       localStorage.setItem('user', JSON.stringify(data.user));
       console.log('data', data);
-      push('/home');
+      push('/dashboard');
       return data;
     } else {
       // Handle specific error for multiple logins

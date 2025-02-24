@@ -4,32 +4,32 @@
     import Charts from "fusioncharts/fusioncharts.charts";
 
     import FusionTheme from "fusioncharts/themes/fusioncharts.theme.fusion";
-    import { LucideNotepadTextDashed } from "lucide-svelte";
+    import { Bus, CircleOff, LoaderPinwheel, LucideNotepadTextDashed, MoveUpRight } from "lucide-svelte";
 
     import SvelteFC, { fcRoot } from "svelte-fusioncharts";
 
     fcRoot(FusionCharts, Charts, FusionTheme);
 
     const barData = [
-        { label: "January", value: "290" },
-        { label: "February", value: "260" },
-        { label: "March", value: "180" },
-        { label: "April", value: "140" },
-        { label: "May", value: "115" },
-        { label: "June", value: "100" },
-        { label: "July", value: "30" },
-        { label: "August", value: "30" },
-        { label: "September", value: "30" },
-        { label: "October", value: "30" },
-        { label: "November", value: "30" },
-        { label: "December", value: "30" },
+        { label: "January", value: "11290" },
+        { label: "February", value: "11360" },
+        { label: "March", value: "12280" },
+        { label: "April", value: "12540" },
+        { label: "May", value: "14815" },
+        { label: "June", value: "14950" },
+        { label: "July", value: "15230" },
+        { label: "August", value: "16330" },
+        { label: "September", value: "16630" },
+        { label: "October", value: "17930" },
+        { label: "November", value: "18630" },
+        { label: "December", value: "18901" },
     ];
 
     //Create your configuration object
     const chartConfigs = {
         type: "column2d", //Select the chart type
-        width: 1000, //Set the width of the chart
-        height: 500, //Set the height of the chart
+        width: 300, //Set the width of the chart
+        height: 300, //Set the height of the chart
         dataFormat: "json", //Set the input dataFormat to json
         dataSource: {
             chart: {
@@ -80,8 +80,8 @@
 
     const pieConfigs = {
         type: "pie2d",
-        width: 1000,
-        height: 500,
+        width: 300,
+        height: 300,
         dataFormat: "json",
         dataSource: pieData,
     };
@@ -189,8 +189,8 @@
 
     const lineConfigs = {
         type: "msline",
-        width: 1000,
-        height: 500,
+        width: 300,
+        height: 300,
         dataFormat: "json",
         dataSource: lineData,
     };
@@ -272,8 +272,8 @@
 
     const stackedConfigs = {
         type: "stackedcolumn2d",
-        width: 1000,
-        height: 500,
+        width: 300,
+        height: 300,
         dataFormat: "json",
         dataSource: stackedData,
     };
@@ -281,9 +281,47 @@
 
 <div class="container">
     <h1>Dashboard</h1>
-    <SvelteFC {...chartConfigs} />
-    <SvelteFC {...pieConfigs} />
-    <SvelteFC {...lineConfigs} />
+    <div class="overview">
+
+        <div class="active-units-container">
+            <div class="text-icon">
+                <h4>Active Units</h4>
+                <Bus color="Green"/>
+            </div>
+            <h3>18,417</h3>
+            <p>
+                <span>97.44% <MoveUpRight size="16"/></span>
+                of total registered
+            </p>
+        </div>
+        <div class="active-units-container">
+            <div class="text-icon">
+                <h4>Inactive Units</h4>
+                <Bus color="red"/>
+            </div>
+            <h3>484</h3>
+            <p>
+                <span>2.56% <MoveUpRight size="16"/></span>
+                of total registered
+            </p>
+        </div>
+        <div class="active-units-container">
+            <div class="text-icon">
+                <h4>Total Registered</h4>
+                <Bus color="blue"/>
+            </div>
+            <h3>18,901</h3>
+            <p>
+                <span>100%</span>
+            </p>
+        </div>
+
+    </div>
+    <div class="chart-container">
+        <SvelteFC {...chartConfigs} />
+        <SvelteFC {...pieConfigs} />
+        <SvelteFC {...lineConfigs} />
+    </div>
     <SvelteFC {...stackedConfigs} />
 </div>
 
@@ -294,4 +332,31 @@
         padding-inline: 1rem;
         height: 100svh;
     }
+    .chart-container {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        padding-block: 2rem;
+    }
+    .overview {
+        display: flex;
+        gap: 1rem;
+    }
+    .active-units-container {
+        border: 1px solid black;
+        width: 20%;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        .text-icon  {
+            display: flex;
+            justify-content: space-between;
+        }
+        p span {
+            color:green;
+        }
+    }
+    
+    
 </style>

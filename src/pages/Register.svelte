@@ -44,8 +44,8 @@
 </script>
 
 <div class="container">
-  <h1>iTrack</h1>
   <form class="register-form" onsubmit={handleSubmit}>
+    <h1>iTrack</h1>
     <h3>Create Account</h3>
     <div class="input-container">
       <label for="username">Username</label>
@@ -163,12 +163,24 @@
 <style>
   .container {
     display: flex;
-    flex-direction: row-reverse;
-    justify-content: flex-end;
+    flex-direction: row;
+    justify-content: space-around;
     height: 100svh;
     width: 100vw;
     gap: 1.5rem;
-    h1 {
+  }
+
+  .register-form {
+    display: grid;
+    gap: 0rem 2rem;
+    grid-template-columns: 1fr 1fr;
+    padding: 6rem;
+    padding-inline: 2rem;
+    min-width: 30vw;
+    height: 100%;
+    border-radius: 5px;
+
+    & h1 {
       font-size: 3.5em;
       font-weight: bold;
       background: linear-gradient(
@@ -183,27 +195,14 @@
       background-size: 500% auto;
       animation: textShine 4s cubic-bezier(0.6, 0.04, 0.98, 0.335) infinite
         alternate;
+      margin-bottom: 1rem;
     }
-  }
-
-  .register-form {
-    /*display: flex;*/
-    /*flex-direction: column;*/
-    /*justify-content: center;*/
-    display: grid;
-    gap: 0rem 2rem;
-    grid-template-columns: 1fr 1fr;
-    padding: 6rem;
-    min-width: 30vw;
-    height: 100%;
-    box-shadow: 0 0 10px rgba(50, 50, 50, 0.2);
-    border-radius: 5px;
     h3 {
       grid-column: 1 / -1;
       margin-bottom: 1.5rem;
     }
     label {
-      font-size: 0.8rem;
+      font-size: 1rem;
     }
     button {
       padding: 0.5rem;
@@ -225,7 +224,6 @@
       flex-direction: column;
       align-items: center;
       width: 100vw;
-      padding: 0.2rem;
     }
     .register-form {
       grid-template-columns: 1fr;
