@@ -158,14 +158,6 @@
       </div>
     </div>
   </form>
-  <div class="informercial">
-    <h1>Welcome to iTrack</h1>
-    <p>
-      Track your vehicles in real time with ease. Our system ensures accurate
-      location updates, efficient route planning, and seamless monitoring—all in
-      one place.
-    </p>
-  </div>
 </div>
 
 <style>
@@ -203,6 +195,7 @@
       background-size: 500% auto;
       animation: textShine 4s cubic-bezier(0.6, 0.04, 0.98, 0.335) infinite
         alternate;
+      margin-bottom: 1rem;
     }
     h3 {
       grid-column: 1 / -1;
@@ -231,7 +224,6 @@
       flex-direction: column;
       align-items: center;
       width: 100vw;
-      padding: 0.2rem;
     }
     .register-form {
       grid-template-columns: 1fr;
@@ -308,9 +300,5 @@
       padding: 0.5rem 2rem;
     }
     gap: 1rem;
-  }
-  .informercial {
-    display: flex;
-    flex-direction: column;
   }
 </style>

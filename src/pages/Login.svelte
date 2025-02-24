@@ -33,8 +33,8 @@
 </script>
 
 <div class="container">
-  <h1>iTrack</h1>
   <form class="login-form" onsubmit={handleSubmit}>
+    <h1>iTrack</h1>
     <h3>Welcome</h3>
     <label for="username">Username</label>
     <div class="inputfield">
@@ -83,8 +83,9 @@
     flex-direction: column;
     align-items: center;
     height: 100svh;
+    width: 100vw;
     gap: 1rem;
-    padding: 1rem;
+    padding-inline: 1rem;
     h1 {
       font-size: 4rem;
       font-weight: bold;
@@ -100,6 +101,7 @@
       background-size: 500% auto;
       animation: textShine 4s cubic-bezier(0.6, 0.04, 0.98, 0.335) infinite
         alternate;
+      margin-block: 2rem;
     }
   }
 
@@ -108,7 +110,8 @@
     flex-direction: column;
     justify-content: center;
     padding: 2rem;
-    min-width: 60vw;
+    height: 100%;
+    min-width: 40vw;
     box-shadow: 0 0 10px rgba(50, 50, 50, 0.2);
     border-radius: 5px;
     h3 {
@@ -136,7 +139,6 @@
       flex-direction: column;
       align-items: center;
       width: 100vw;
-      padding: 1rem;
     }
   }
 
