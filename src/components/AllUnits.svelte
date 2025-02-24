@@ -32,7 +32,6 @@
 
   onMount(() => {
     getHistoryAllUnits();
-    console.log(API_URL);
   });
 
   async function getHistoryAllUnits() {
@@ -227,7 +226,6 @@
                     onclick={() => {
                       selectedUnit = unit;
                       detailsModal = true;
-                      console.log(selectedUnit);
                     }}>Details</button
                   >
                 </div>
@@ -289,6 +287,9 @@
 {#if detailsModal}
   <div class="modal">
     <DeviceDetails {selectedUnit} />
+    <button id="close-btn" type="button" onclick={() => (detailsModal = false)}
+      >Close</button
+    >
   </div>
 {/if}
 
@@ -345,7 +346,7 @@
   .table-container {
     overflow-x: auto;
     overflow-y: auto;
-    height: 60vh;
+    height: 70vh;
     background-color: white;
     border-radius: 0.25rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -486,5 +487,18 @@
     justify-content: center;
     align-items: center;
     z-index: 100;
+  }
+  #close-btn {
+    position: absolute;
+    top: 5%;
+    right: 5%;
+    padding: 0.5rem 1rem;
+    background-color: transparent;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    &:hover {
+      font-weight: bold;
+    }
   }
 </style>

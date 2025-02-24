@@ -3,6 +3,7 @@
   import { onMount, onDestroy } from "svelte";
   import { writable } from "svelte/store";
   import mapMarker from "../assets/icon.png";
+  //import { mapStyle } from "../components/mapStyles";
   let map: google.maps.Map;
   let eventSource: EventSource | null = null;
   let markerInfoWindow: google.maps.InfoWindow;
@@ -32,6 +33,7 @@
       center: { lat: 14.7289, lng: 121.1441 },
       zoom: 16,
       zoomControl: false,
+      //styles: mapStyle,
       streetViewControl: true,
       rotateControl: true,
       mapTypeControl: true,
