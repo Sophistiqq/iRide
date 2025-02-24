@@ -178,7 +178,6 @@
     padding-inline: 2rem;
     min-width: 30vw;
     height: 100%;
-    box-shadow: 0 0 10px rgba(50, 50, 50, 0.2);
     border-radius: 5px;
 
     & h1 {

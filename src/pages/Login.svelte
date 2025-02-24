@@ -112,7 +112,6 @@
     padding: 2rem;
     height: 100%;
     min-width: 40vw;
-    box-shadow: 0 0 10px rgba(50, 50, 50, 0.2);
     border-radius: 5px;
     h3 {
       margin-bottom: 1.5rem;
