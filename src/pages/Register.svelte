@@ -5,10 +5,12 @@
     CircleUserRound,
     Eye,
     EyeOff,
+    Loader,
     LockKeyhole,
     Mail,
     Phone,
   } from "lucide-svelte";
+  import { toast } from "../lib/Toast";
 
   let username = $state("");
   let email = $state("");
@@ -18,15 +20,33 @@
   let show_confirm_password = $state(false);
   let mobile_number = $state("");
   let fullname = $state("");
-
-  const handleSubmit = (e: Event) => {
+  let loading = $state(false);
+  async function handleSubmit(e: Event) {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      alert("Passwords do not match");
-      return;
+    loading = true;
+    try {
+      if (password !== confirmPassword) {
+        toast("Passwords do not match", 2000, "error");
+        return;
+      }
+      let user: any = await register(
+        username,
+        password,
+        fullname,
+        mobile_number,
+        email,
+      );
+      if (user.status === "success") {
+        toast(user.message, 2000, "success");
+      } else {
+        toast(user.message, 2000, "error");
+      }
+    } catch (error) {
+      console.error("An error occurred during registration:", error);
+    } finally {
+      loading = false;
     }
-    register(username, password, fullname, mobile_number, email);
-  };
+  }
 
   function togglePasswordVisibility(field: "password" | "confirmPassword") {
     alert(field);
@@ -151,7 +171,13 @@
       </div>
     </div>
     <div class="controls">
-      <button id="submit" type="submit">Register</button>
+      <button id="submit" type="submit">
+        {#if loading}
+          <Loader size="12" color="white" />
+        {:else}
+          Register
+        {/if}
+      </button>
       <div class="login-link">
         <p>Already have an account?</p>
         <a href="/" use:link>Login</a>

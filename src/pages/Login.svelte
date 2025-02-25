@@ -1,20 +1,34 @@
 <script lang="ts">
   import { link } from "svelte-spa-router";
-  import { CircleUserRound, Eye, EyeOff, LockKeyhole } from "lucide-svelte";
+  import {
+    CircleUserRound,
+    Eye,
+    EyeOff,
+    Loader,
+    LockKeyhole,
+  } from "lucide-svelte";
   import { login } from "../lib/auth";
   import { onMount } from "svelte";
   import { toast } from "../lib/Toast";
   let username = $state("");
   let password = $state("");
   let show_password = $state(false);
-
+  let loading = $state(false);
   async function handleSubmit(e: Event) {
     e.preventDefault();
-    const user = await login(username, password);
-    if (user) {
-      toast("Login successful", 2000, "success");
-    } else {
-      toast("Invalid username or password", 2000, "error");
+    loading = true;
+    try {
+      const user: any = await login(username, password);
+      console.log(user);
+      if (user.status === "success") {
+        toast(user.message, 2000, "success");
+      } else {
+        toast(user.message, 2000, "error");
+      }
+    } catch (error) {
+      toast("An error occurred during login", 2000, "error");
+    } finally {
+      loading = false;
     }
   }
 
@@ -68,7 +82,13 @@
     <a href="/forgot-password" id="forgot-password" use:link>
       Forgot Password?
     </a>
-    <button id="submit" type="submit">Login</button>
+    <button id="submit" type="submit">
+      {#if loading}
+        <Loader size="12" color="white" />
+      {:else}
+        Login
+      {/if}
+    </button>
     <div class="register-link">
       <p>or</p>
       <a href="/register" use:link>Register</a>

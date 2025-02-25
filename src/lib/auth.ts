@@ -119,12 +119,7 @@ export async function login(username: string, password: string): Promise<User | 
       push('/dashboard');
       return data;
     } else {
-      // Handle specific error for multiple logins
-      if (data.error === "Already logged in on another device") {
-        // You might want to show this in your UI
-        throw new Error("You are already logged in on another device");
-      }
-      throw new Error(data.error || 'Login failed');
+      return data
     }
   } catch (error) {
     console.error('Login error:', error);
@@ -170,10 +165,11 @@ export async function register(username: string, password: string, fullname: str
         isAuthenticated: true,
         isInitialized: true
       });
-      push('/map');
+      console.log('data', data);
+      push('/dashboard');
       return data.user;
     } else {
-      throw new Error(data.error || 'Registration failed');
+      return data
     }
   } catch (error) {
     console.error('Registration error:', error);
