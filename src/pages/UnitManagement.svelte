@@ -65,7 +65,7 @@
 
 <div class="container">
   <div class="header">
-    <p>Unit Management</p>
+    <h2>Unit Management</h2>
     <p>Manage your team members and their units permission here.</p>
   </div>
 
@@ -132,8 +132,8 @@
   }
   .header > p {
     &:first-child {
-      font-weight: bold;
-      font-size: 1.8rem;
+      font-weight:600;
+      font-size: 1.25rem;
       margin-bottom:1rem;
     }
   }
@@ -170,8 +170,9 @@
 
   .header-controls {
     display: flex;
-    align-items: center;
     gap: 1rem;
+    margin-right:10rem;
+   
     select {
       border: 1px solid black;
       border-radius: 0.3rem;
@@ -188,7 +189,7 @@
   }
 
   table {
-    width: 100%;
+    width: 90%;
     margin-left: 2rem;
     margin-top: 2rem;
     border-collapse: collapse;
