@@ -4,7 +4,29 @@
     import Charts from "fusioncharts/fusioncharts.charts";
 
     import FusionTheme from "fusioncharts/themes/fusioncharts.theme.fusion";
-    import { Bus, CircleOff, LoaderPinwheel, LucideNotepadTextDashed, MoveUpRight } from "lucide-svelte";
+    import {
+        BookUser,
+        Bus,
+        CalendarCheck,
+        CircleAlert,
+        CircleOff,
+        Clock,
+        Cpu,
+        LoaderPinwheel,
+        Logs,
+        LucideNotepadTextDashed,
+        MapPin,
+        MessageCircleWarning,
+        MessageSquareWarning,
+        Microchip,
+        MonitorCheck,
+        MoveUpRight,
+        Pen,
+        ShieldAlert,
+        TrafficCone,
+        TriangleAlert,
+        UserCheck,
+    } from "lucide-svelte";
 
     import SvelteFC, { fcRoot } from "svelte-fusioncharts";
 
@@ -28,7 +50,7 @@
     //Create your configuration object
     const chartConfigs = {
         type: "column2d", //Select the chart type
-        width: 300, //Set the width of the chart
+        width: 700, //Set the width of the chart
         height: 300, //Set the height of the chart
         dataFormat: "json", //Set the input dataFormat to json
         dataSource: {
@@ -80,7 +102,7 @@
 
     const pieConfigs = {
         type: "pie2d",
-        width: 300,
+        width: 315,
         height: 300,
         dataFormat: "json",
         dataSource: pieData,
@@ -189,7 +211,7 @@
 
     const lineConfigs = {
         type: "msline",
-        width: 300,
+        width: 315,
         height: 300,
         dataFormat: "json",
         dataSource: lineData,
@@ -272,57 +294,112 @@
 
     const stackedConfigs = {
         type: "stackedcolumn2d",
-        width: 300,
+        width: 315,
         height: 300,
         dataFormat: "json",
         dataSource: stackedData,
     };
+
+    let serverStatus = {
+        SystemUptime: 211,
+        RAM: 20,
+        RecentLogs: 604,
+        ActiveSessions: 849,
+        ServerName: "iTrack",
+        ServerIp: "10.0.0.1",
+        CPUUsage: 70,
+        NetworkTraffic: 35,
+        LoggedinUsers: 853,
+        AccessLogs: 18901,
+        ScheduledMaintenance: "May 15, 2025",
+        RecentAlerts: 583,
+        IncidentReports: 47,
+        ErrorLogs: 3,
+
+
+         totalUnits: 18901,
+         activeUnits: 18345,
+    }
+     
+
 </script>
 
 <div class="container">
-    <h1>Dashboard</h1>
-    <div class="overview">
+    <div class="dashboard-container">
+        <h1>Dashboard</h1>
+        <div class="overview">
+            <div class="active-units-container">
+                <div class="text-icon">
+                    <h4>Active Units</h4>
+                    <Bus color="Green" />
+                </div>
+                <h3>{serverStatus.activeUnits}</h3>
+                <p>
+                    <span>{(serverStatus.activeUnits / serverStatus.totalUnits * 100).toFixed(2)}% <MoveUpRight size="16" /></span>
 
-        <div class="active-units-container">
-            <div class="text-icon">
-                <h4>Active Units</h4>
-                <Bus color="Green"/>
+                    of total registered
+                </p>
             </div>
-            <h3>18,417</h3>
-            <p>
-                <span>97.44% <MoveUpRight size="16"/></span>
-                of total registered
-            </p>
-        </div>
-        <div class="active-units-container">
-            <div class="text-icon">
-                <h4>Inactive Units</h4>
-                <Bus color="red"/>
+            <div class="active-units-container">
+                <div class="text-icon">
+                    <h4>Inactive Units</h4>
+                    <Bus color="red" />
+                </div>
+                <h3>{serverStatus.totalUnits - serverStatus.activeUnits}</h3>
+                <p>
+                    <span>{(100 - (serverStatus.activeUnits / serverStatus.totalUnits * 100)).toFixed(2)}% <MoveUpRight size="16" /></span>
+                    of total registered
+                </p>
             </div>
-            <h3>484</h3>
-            <p>
-                <span>2.56% <MoveUpRight size="16"/></span>
-                of total registered
-            </p>
-        </div>
-        <div class="active-units-container">
-            <div class="text-icon">
-                <h4>Total Registered</h4>
-                <Bus color="blue"/>
+            <div class="active-units-container">
+                <div class="text-icon">
+                    <h4>Total Registered</h4>
+                    <Bus color="blue" />
+                </div>
+                <h3>{serverStatus.totalUnits}</h3>
+                <p>
+                    <span>100%</span>
+                </p>
             </div>
-            <h3>18,901</h3>
-            <p>
-                <span>100%</span>
-            </p>
         </div>
+        <div class="chart-container">
+            <SvelteFC {...chartConfigs} />
+            <SvelteFC {...pieConfigs} />
+            <SvelteFC {...lineConfigs} />
+        </div>
+        <SvelteFC {...stackedConfigs} />
+    </div>
+    <div class="serverinfo"> 
+    <div class="system-info">
+
+        <h3>General Server Details</h3>
+        <p><Pen/><b>Server Name:</b> {serverStatus.ServerName}</p>
+        <p><MapPin/><b>Server IP Address:</b> {serverStatus.ServerIp}</p>
+        <p><Clock/><b>System Uptime:</b> {serverStatus.SystemUptime}</p>
+        
+        <h3>Hardware Specifications</h3>
+        <p><Logs/><b>Recent Logs:</b> {serverStatus.RecentLogs}</p>
+        <p><MonitorCheck/><b>Active Sessions:</b> {serverStatus.ActiveSessions}</p>
+
+        <h3>Performance Monitoring</h3>
+        <p><Microchip/><b>CPU Usage:</b> {serverStatus.CPUUsage}</p>
+        <p><Cpu/><b>RAM</b> </p>
+        <p>Total Memory: {serverStatus.RAM}</p>
+        <p><TrafficCone/><b>Network Traffic:</b> {serverStatus.NetworkTraffic}</p>
+
+        <h3>User and Access Details</h3>
+        <p><UserCheck/><b>Logged-in Users:</b> {serverStatus.LoggedinUsers}</p>
+        <p><BookUser/><b>Access Logs:</b> {serverStatus.AccessLogs}</p>
+        <p><ShieldAlert/><b>Error Logs:</b> {serverStatus.ErrorLogs}</p>
+
+        <h3>Server Events and Alerts</h3>
+        <p><CalendarCheck/><b>Scheduled Maintenance:</b> {serverStatus.ScheduledMaintenance}</p>
+        <p><CircleAlert/><b>Recent Alerts:</b> {serverStatus.RecentAlerts}</p>
+        <p><MessageSquareWarning/><b>Incident Reports:</b> {serverStatus.IncidentReports}</p>
+
 
     </div>
-    <div class="chart-container">
-        <SvelteFC {...chartConfigs} />
-        <SvelteFC {...pieConfigs} />
-        <SvelteFC {...lineConfigs} />
-    </div>
-    <SvelteFC {...stackedConfigs} />
+</div>
 </div>
 
 <style>
@@ -331,6 +408,25 @@
         background-color: var(--background);
         padding-inline: 1rem;
         height: 100svh;
+        display: flex;
+        justify-content: space-between;
+    }
+    .system-info {
+        border: 1px solid black;
+        width: 25vw;
+        height: 100vh;
+        p {
+            display: flex;
+            align-items: center;
+            margin-block: .5rem;
+            gap: .5rem;
+        }
+    }
+    .dashboard-container {
+        height: 100vh;
+        overflow-y: scroll;
+        width: 100%;
+        scrollbar-width: none; /* Firefox */
     }
     .chart-container {
         display: flex;
@@ -344,19 +440,17 @@
     }
     .active-units-container {
         border: 1px solid black;
-        width: 20%;
+        width: 30%;
         padding: 1rem;
         display: flex;
         flex-direction: column;
         gap: 1rem;
-        .text-icon  {
+        .text-icon {
             display: flex;
             justify-content: space-between;
         }
         p span {
-            color:green;
+            color: green;
         }
     }
-    
-    
 </style>
