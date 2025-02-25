@@ -13,7 +13,7 @@ type AuthState = {
   isInitialized: boolean;
 };
 
-const serverUrl = import.meta.env.VITE_SERVER_API_URL
+const SERVER_URL = import.meta.env.VITE_SERVER_API_URL
 const tokenKey = "secret";
 
 // Single auth store
@@ -53,7 +53,7 @@ export async function checkAuth(shouldRedirect = true): Promise<boolean> {
   }
 
   try {
-    const response = await fetch(`${serverUrl}/me`, {
+    const response = await fetch(`${SERVER_URL}/me`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -99,7 +99,7 @@ export async function checkAuth(shouldRedirect = true): Promise<boolean> {
 // Add new error handling in login function
 export async function login(username: string, password: string): Promise<User | null> {
   try {
-    const response = await fetch(`${serverUrl}/login`, {
+    const response = await fetch(`${SERVER_URL}/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
@@ -136,7 +136,7 @@ export async function login(username: string, password: string): Promise<User | 
 // Update logout function
 export async function logout(): Promise<void> {
   try {
-    await fetch(`${serverUrl}/logout`, {
+    await fetch(`${SERVER_URL}/logout`, {
       method: "POST",
       headers: { Authorization: `Bearer ${TokenManager.get()}` },
     });
@@ -155,7 +155,7 @@ export async function logout(): Promise<void> {
 // Registration function should have username, fullname, password, email, mobile_number
 export async function register(username: string, password: string, fullname: string, mobile_number: string, email: string): Promise<User | null> {
   try {
-    const response = await fetch(`${serverUrl}/register`, {
+    const response = await fetch(`${SERVER_URL}/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password, fullname, mobile_number, email }),

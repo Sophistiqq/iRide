@@ -4,7 +4,6 @@
   import { fly } from "svelte/transition";
   import { toast } from "../lib/Toast";
   import { CircleUserRound, Eye, EyeOff, LockKeyhole } from "lucide-svelte";
-  import { API_URL } from "../lib/ServerAPI";
   const SERVER_URL = import.meta.env.VITE_SERVER_API_URL;
   let show_password = $state(false);
 
@@ -85,7 +84,7 @@
     }
 
     console.log(username, old_password, new_password, confirm_password);
-    const res = await fetch(`${API_URL}/change-password`, {
+    const res = await fetch(`${SERVER_URL}/change-password`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
