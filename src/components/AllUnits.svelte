@@ -3,7 +3,7 @@
   import { ArrowUpDown, Loader2, RefreshCcwIcon } from "lucide-svelte";
   import DeviceDetails from "./DeviceDetails.svelte";
   //import { data } from "./fakedata";
-  export const API_URL = import.meta.env.VITE_SERVER_API_URL;
+  let SERVER_URL = import.meta.env.VITE_SERVER_API_URL;
   interface Location {
     id: string;
     device_id: string;
@@ -38,7 +38,7 @@
     try {
       loading = true;
       error = null;
-      const res = await fetch(`${API_URL}/unit-history`);
+      const res = await fetch(`${SERVER_URL}/unit-history`);
       if (!res.ok) throw new Error("Failed to fetch data");
       const data = await res.json();
 
