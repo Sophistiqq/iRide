@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { logout } from "../lib/auth";
-  import { fly } from "svelte/transition";
+  import { fly, slide } from "svelte/transition";
   import { toast } from "../lib/Toast";
   import { CircleUserRound, Eye, EyeOff, LockKeyhole } from "lucide-svelte";
   import { API_URL } from "../lib/ServerAPI";
@@ -40,6 +40,8 @@
   let editUsername = $state("");
   let editEmail = $state("");
   let editMobileNumber = $state("");
+
+  let SettingsDropdown = $state(false); // Dropdown visibility state
 
   function togglePasswordVisibility(
     field: "new_password" | "old_password" | "confirm_password",
@@ -132,21 +134,11 @@
     <div class="information">
       <h1>{user_data.fullname}</h1>
       <p>{user_data.username}</p>
-      <p>{user_data.email}</p>
-      <p>{user_data.mobile_number}</p>
 
-      <div class="changepassword">
-        <button id="changepass" onclick={requestPasswordChange}
-          >Change password</button
-        >
-
-        <button id="editprof" onclick={() => (EditProfileModal = true)}
-          >Edit your profile</button
-        >
-
-        <div class="logout">
-          <button class="logout" onclick={logout}>Logout</button>
-        </div>
+      <div class="profile2">
+        <p>{user_data.email}</p>
+        <p>|</p>
+        <p>{user_data.mobile_number}</p>
       </div>
     </div>
   </div>
@@ -154,6 +146,25 @@
   <div class="about">
     <h1>About us</h1>
   </div>
+</div>
+
+<!-- Dropdown Menu -->
+<div class="settings">
+  <button
+    class="settingsbutton"
+    onclick={() => (SettingsDropdown = !SettingsDropdown)}>⚙️</button
+  >
+  {#if SettingsDropdown}
+    <div class="settings-container visible" transition:slide={{ axis: "y" }}>
+      <button id="changepass" onclick={requestPasswordChange}
+        >Change Password</button
+      >
+      <button id="editprof" onclick={() => (EditProfileModal = true)}
+        >Edit Profile</button
+      >
+      <button id="logout" onclick={logout}>Logout</button>
+    </div>
+  {/if}
 </div>
 
 {#if ChangePasswordModal}
@@ -307,63 +318,74 @@
     width: 100%;
     padding: 20px;
     box-sizing: border-box;
+    background-color: #f7f7f7;
+  }
+
+  .container .information p {
+    margin-top: -1rem;
+    margin-bottom: 1rem;
+  }
+
+  .profile,
+  .about {
+    padding: 1.5rem;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+  }
+
+  .profile {
+    border: 1px solid #ddd;
+    height: 50%;
+  }
+
+  .profile2 {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .about {
+    border-top: 1px solid #ddd;
+  }
+
+  .profile h1,
+  .about h1 {
+    font-size: 28px;
+    font-weight: 600;
+    color: #333;
   }
 
   .information {
     display: flex;
     align-items: center;
     flex-direction: column;
-    justify-content: center;
     gap: 1rem;
   }
 
-  .profile {
-    padding: 20px;
-    margin-bottom: 20px;
-    border: 1px solid #ddd; /* Border to separate profile */
-    border-radius: 8px;
-    background-color: #f9f9f9; /* Light background */
+  h1 {
+    color: #333;
+    font-size: 22px;
   }
 
-  .profile h1 {
-    font-size: 24px;
+  p {
+    color: #666;
+    font-size: 16px;
   }
 
   .about {
     padding: 20px;
+    height: 50%;
     border: 1px solid #ddd; /* Border to separate about section */
     border-radius: 8px;
     background-color: #f9f9f9; /* Light background */
     margin-top: 20px;
+    height: 50%;
   }
 
   .about h1 {
     font-size: 24px;
     margin-bottom: 10px;
-  }
-
-  #changepass,
-  #editprof {
-    margin: 10px 0;
-    padding: 0.8rem 1rem;
-    border: none;
-    border-radius: 5px;
-    background-color: var(--primary);
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    &:active {
-      background-color: var(--primary-active);
-    }
-
-    &:hover {
-      background-color: var(--primary);
-      transform: scale(1.05); /* Slight scale effect for hover */
-    }
-  }
-
-  #changepass {
-    margin-right: 0.5rem;
   }
 
   // MODAL STYLE
@@ -388,7 +410,7 @@
   }
 
   input:focus {
-    border-color: #007bff;
+    border-color: var(--primary);
   }
 
   form {
@@ -467,25 +489,93 @@
     }
   }
 
-  .logout {
+  // Settings Style
+  .settings {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 100; /* Ensure it's above other content */
+  }
+
+  .settingsbutton {
+    margin: 0.5rem;
+    color: white;
+    border: none;
+    padding: 1rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    &:hover {
+      background-color: var(--primary);
+      transform: scale(1.1) rotate(180deg); /* Slight rotation effect */
+    }
+    &:active {
+      background-color: var(--primary-active);
+    }
+  }
+
+  .settingsbutton:focus {
+    background: var(--primary);
+  }
+
+  .settings-container {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 220px;
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition:
+      opacity 0.3s ease,
+      max-height 0.3s ease;
+    &.visible {
+      opacity: 1;
+      max-height: 500px; /* Dropdown expands */
+    }
+  }
+
+  .settings-container button {
+    padding: 12px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    background-color: transparent;
+    color: #444;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    &:hover {
+      background-color: var(--primary-light);
+      color: var(--primary);
+      transform: translateX(8px);
+    }
+    &:active {
+      background-color: var(--primary-active);
+    }
+  }
+
+  #logout {
     background-color: #d32f2f; /* Red color for logout */
     color: white;
-    padding: 0.3rem;
+    padding: rem;
     border-radius: 5px;
     border: none;
     cursor: pointer;
     transition:
       background-color 0.3s,
       transform 0.2s ease-in-out;
+  }
 
-    &:hover {
-      background-color: #c62828; /* Darker red on hover */
-      transform: scale(1.05); /* Slight scale effect for hover */
-    }
-
-    &.logout {
-      display: flex;
-      justify-content: center;
-    }
+  .settings-container button:focus {
+    outline: none;
+    box-shadow: 0 0 4px 2px rgba(0, 123, 255, 0.6); /* Blue outline */
   }
 </style>
