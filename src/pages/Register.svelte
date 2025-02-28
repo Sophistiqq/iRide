@@ -5,10 +5,12 @@
     CircleUserRound,
     Eye,
     EyeOff,
+    Loader,
     LockKeyhole,
     Mail,
     Phone,
   } from "lucide-svelte";
+  import { toast } from "../lib/Toast";
 
   let username = $state("");
   let email = $state("");
@@ -18,15 +20,33 @@
   let show_confirm_password = $state(false);
   let mobile_number = $state("");
   let fullname = $state("");
-
-  const handleSubmit = (e: Event) => {
+  let loading = $state(false);
+  async function handleSubmit(e: Event) {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      alert("Passwords do not match");
-      return;
+    loading = true;
+    try {
+      if (password !== confirmPassword) {
+        toast("Passwords do not match", 2000, "error");
+        return;
+      }
+      let user: any = await register(
+        username,
+        password,
+        fullname,
+        mobile_number,
+        email,
+      );
+      if (user.status === "success") {
+        toast(user.message, 2000, "success");
+      } else {
+        toast(user.message, 2000, "error");
+      }
+    } catch (error) {
+      console.error("An error occurred during registration:", error);
+    } finally {
+      loading = false;
     }
-    register(username, password, fullname, mobile_number, email);
-  };
+  }
 
   function togglePasswordVisibility(field: "password" | "confirmPassword") {
     alert(field);
@@ -44,8 +64,8 @@
 </script>
 
 <div class="container">
-  <h1>iTrack</h1>
   <form class="register-form" onsubmit={handleSubmit}>
+    <h1>iTrack</h1>
     <h3>Create Account</h3>
     <div class="input-container">
       <label for="username">Username</label>
@@ -151,7 +171,13 @@
       </div>
     </div>
     <div class="controls">
-      <button id="submit" type="submit">Register</button>
+      <button id="submit" type="submit">
+        {#if loading}
+          <Loader size="12" color="white" />
+        {:else}
+          Register
+        {/if}
+      </button>
       <div class="login-link">
         <p>Already have an account?</p>
         <a href="/" use:link>Login</a>
@@ -163,12 +189,24 @@
 <style>
   .container {
     display: flex;
-    flex-direction: row-reverse;
-    justify-content: flex-end;
+    flex-direction: row;
+    justify-content: space-around;
     height: 100svh;
     width: 100vw;
     gap: 1.5rem;
-    h1 {
+  }
+
+  .register-form {
+    display: grid;
+    gap: 0rem 2rem;
+    grid-template-columns: 1fr 1fr;
+    padding: 6rem;
+    padding-inline: 2rem;
+    min-width: 30vw;
+    height: 100%;
+    border-radius: 5px;
+
+    & h1 {
       font-size: 3.5em;
       font-weight: bold;
       background: linear-gradient(
@@ -183,27 +221,14 @@
       background-size: 500% auto;
       animation: textShine 4s cubic-bezier(0.6, 0.04, 0.98, 0.335) infinite
         alternate;
+      margin-bottom: 1rem;
     }
-  }
-
-  .register-form {
-    /*display: flex;*/
-    /*flex-direction: column;*/
-    /*justify-content: center;*/
-    display: grid;
-    gap: 0rem 2rem;
-    grid-template-columns: 1fr 1fr;
-    padding: 6rem;
-    min-width: 30vw;
-    height: 100%;
-    box-shadow: 0 0 10px rgba(50, 50, 50, 0.2);
-    border-radius: 5px;
     h3 {
       grid-column: 1 / -1;
       margin-bottom: 1.5rem;
     }
     label {
-      font-size: 0.8rem;
+      font-size: 1rem;
     }
     button {
       padding: 0.5rem;
@@ -225,7 +250,6 @@
       flex-direction: column;
       align-items: center;
       width: 100vw;
-      padding: 0.2rem;
     }
     .register-form {
       grid-template-columns: 1fr;

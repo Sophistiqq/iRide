@@ -1,20 +1,34 @@
 <script lang="ts">
   import { link } from "svelte-spa-router";
-  import { CircleUserRound, Eye, EyeOff, LockKeyhole } from "lucide-svelte";
+  import {
+    CircleUserRound,
+    Eye,
+    EyeOff,
+    Loader,
+    LockKeyhole,
+  } from "lucide-svelte";
   import { login } from "../lib/auth";
   import { onMount } from "svelte";
   import { toast } from "../lib/Toast";
   let username = $state("");
   let password = $state("");
   let show_password = $state(false);
-
+  let loading = $state(false);
   async function handleSubmit(e: Event) {
     e.preventDefault();
-    const user = await login(username, password);
-    if (user) {
-      toast("Login successful", 2000, "success");
-    } else {
-      toast("Invalid username or password", 2000, "error");
+    loading = true;
+    try {
+      const user: any = await login(username, password);
+      console.log(user);
+      if (user.status === "success") {
+        toast(user.message, 2000, "success");
+      } else {
+        toast(user.message, 2000, "error");
+      }
+    } catch (error) {
+      toast("An error occurred during login", 2000, "error");
+    } finally {
+      loading = false;
     }
   }
 
@@ -33,8 +47,8 @@
 </script>
 
 <div class="container">
-  <h1>iTrack</h1>
   <form class="login-form" onsubmit={handleSubmit}>
+    <h1>iTrack</h1>
     <h3>Welcome</h3>
     <label for="username">Username</label>
     <div class="inputfield">
@@ -68,7 +82,13 @@
     <a href="/forgot-password" id="forgot-password" use:link>
       Forgot Password?
     </a>
-    <button id="submit" type="submit">Login</button>
+    <button id="submit" type="submit">
+      {#if loading}
+        <Loader size="12" color="white" />
+      {:else}
+        Login
+      {/if}
+    </button>
     <div class="register-link">
       <p>or</p>
       <a href="/register" use:link>Register</a>
@@ -83,8 +103,9 @@
     flex-direction: column;
     align-items: center;
     height: 100svh;
+    width: 100vw;
     gap: 1rem;
-    padding: 1rem;
+    padding-inline: 1rem;
     h1 {
       font-size: 4rem;
       font-weight: bold;
@@ -100,6 +121,7 @@
       background-size: 500% auto;
       animation: textShine 4s cubic-bezier(0.6, 0.04, 0.98, 0.335) infinite
         alternate;
+      margin-block: 2rem;
     }
   }
 
@@ -108,8 +130,8 @@
     flex-direction: column;
     justify-content: center;
     padding: 2rem;
-    min-width: 60vw;
-    box-shadow: 0 0 10px rgba(50, 50, 50, 0.2);
+    height: 100%;
+    min-width: 40vw;
     border-radius: 5px;
     h3 {
       margin-bottom: 1.5rem;
@@ -136,7 +158,9 @@
       flex-direction: column;
       align-items: center;
       width: 100vw;
-      padding: 1rem;
+    }
+    .login-form {
+      min-width: 80vw;
     }
   }
 

@@ -1,7 +1,13 @@
 <script lang="ts">
   import { link, location } from "svelte-spa-router";
   import mapMarker from "../assets/icon.png";
-  import { Map, Calendar, Bus, CircleUserRound, LayoutDashboard } from "lucide-svelte";
+  import {
+    Map,
+    Calendar,
+    Bus,
+    CircleUserRound,
+    LayoutDashboard,
+  } from "lucide-svelte";
   $: activePage = $location;
 </script>
 
@@ -10,9 +16,12 @@
   <a
     href="/dashboard"
     use:link
-    class={activePage === "/dashboard " ? "active" : ""}
+    class={activePage === "/dashboard" ? "active" : ""}
   >
-    <LayoutDashboard size="24" color={activePage === "/dashboard" ? "var(--accent)" : "#333"} />
+    <LayoutDashboard
+      size="24"
+      color={activePage === "/dashboard" ? "var(--accent)" : "#333"}
+    />
     <p>Dashboard</p>
   </a>
   <a href="/map" use:link class={activePage === "/map" ? "active" : ""}>

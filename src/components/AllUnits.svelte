@@ -1,8 +1,9 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { ArrowUpDown, Loader2, RefreshCcwIcon } from "lucide-svelte";
-  import { data } from "./fakedata";
-  export const API_URL = import.meta.env.VITE_SERVER_API_URL;
+  import DeviceDetails from "./DeviceDetails.svelte";
+  //import { data } from "./fakedata";
+  let SERVER_URL = import.meta.env.VITE_SERVER_API_URL;
   interface Location {
     id: string;
     device_id: string;
@@ -31,16 +32,15 @@
 
   onMount(() => {
     getHistoryAllUnits();
-    console.log(API_URL);
   });
 
   async function getHistoryAllUnits() {
     try {
       loading = true;
       error = null;
-      const res = await fetch(`${API_URL}/unit-history`);
+      const res = await fetch(`${SERVER_URL}/unit-history`);
       if (!res.ok) throw new Error("Failed to fetch data");
-      //const data = await res.json();
+      const data = await res.json();
 
       history = data.locations.map((location: Location) => ({
         ...location,
@@ -111,6 +111,22 @@
   function openInMaps(lat: number, lng: number) {
     window.open(`https://www.google.com/maps?q=${lat},${lng}`, "_blank");
   }
+
+  let detailsModal = $state(false);
+  let selectedUnit = $state<Location | null>(null);
+
+  // Close the modal on escape key press and when clicking outside the modal
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      detailsModal = false;
+    }
+  });
+
+  window.addEventListener("click", (e) => {
+    if (e.target === e.currentTarget) {
+      detailsModal = false;
+    }
+  });
 </script>
 
 <div class="all-units">
@@ -205,7 +221,13 @@
               <td>{unit.timestamp}</td>
               <td>
                 <div class="actions">
-                  <button class="action-button">Details</button>
+                  <button
+                    class="action-button"
+                    onclick={() => {
+                      selectedUnit = unit;
+                      detailsModal = true;
+                    }}>Details</button
+                  >
                 </div>
               </td>
             </tr>
@@ -262,6 +284,15 @@
   {/if}
 </div>
 
+{#if detailsModal}
+  <div class="modal">
+    <DeviceDetails {selectedUnit} />
+    <button id="close-btn" type="button" onclick={() => (detailsModal = false)}
+      >Close</button
+    >
+  </div>
+{/if}
+
 <style lang="scss">
   .all-units {
     width: 100%;
@@ -315,7 +346,7 @@
   .table-container {
     overflow-x: auto;
     overflow-y: auto;
-    height: 60vh;
+    height: 70vh;
     background-color: white;
     border-radius: 0.25rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -446,6 +477,28 @@
     cursor: pointer;
     &:active {
       transform: scale(0.9);
+    }
+  }
+  .modal {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+  }
+  #close-btn {
+    position: absolute;
+    top: 5%;
+    right: 5%;
+    padding: 0.5rem 1rem;
+    background-color: transparent;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    &:hover {
+      font-weight: bold;
     }
   }
 </style>
