@@ -43,6 +43,7 @@
       }
     } catch (error) {
       console.error("An error occurred during registration:", error);
+      toast("An error occurred during registration", 2000, "error");
     } finally {
       loading = false;
     }
