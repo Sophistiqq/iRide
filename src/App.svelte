@@ -7,6 +7,7 @@
   import History from "./pages/History.svelte";
   import UnitManagement from "./pages/UnitManagement.svelte";
   import Dashboard from "./pages/Dashboard.svelte";
+  import AdminLogin from "./pages/AdminLogin.svelte";
   import Profile from "./pages/Profile.svelte";
   import { onMount } from "svelte";
   import { location } from "svelte-spa-router";
@@ -21,6 +22,7 @@
     "/dashboard": Dashboard,
     "/profile": Profile,
     "/map": Map,
+    "/admin": AdminLogin,
   };
 
   // Subscribe to route changes
