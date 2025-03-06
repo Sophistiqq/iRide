@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { link } from "svelte-spa-router";
   import {
     CircleUserRound,
     Eye,
@@ -10,6 +9,8 @@
   import { login } from "../lib/auth";
   import { onMount } from "svelte";
   import { toast } from "../lib/Toast";
+  let SERVER_URL = import.meta.env.VITE_SERVER_API_URL;
+
   let username = $state("");
   let password = $state("");
   let show_password = $state(false);
@@ -44,12 +45,95 @@
     passwordInput.type = show_password ? "password" : "text";
     show_password = !show_password;
   }
+
+  let forgot_password_modal = $state(false);
+  let email = $state("");
+  let step = $state(1);
+  let forgot_password_new = $state("");
+  let forgot_password_confirm = $state("");
+
+  async function submitForgotPassword(e: SubmitEvent) {
+    e.preventDefault();
+
+    if (forgot_password_new !== forgot_password_confirm) {
+      toast("Passwords do not match", 2000, "error");
+      return;
+    }
+    try {
+      const res = await fetch(`${SERVER_URL}/forgot-password/reset-password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password: forgot_password_new }),
+      });
+      const data = await res.json();
+      if (data.status === "success") {
+        toast(data.message, 2000, "success");
+        forgot_password_modal = false;
+      } else {
+        throw new Error(data.message);
+      }
+    } catch (error: any) {
+      toast(error.message, 2000, "error");
+    }
+  }
+
+  async function submitEmail() {
+    try {
+      const res = await fetch(`${SERVER_URL}/forgot-password/check-email`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (data.status === "success") {
+        toast(data.message, 2000, "success");
+        step = 2;
+        await fetch(`${SERVER_URL}/forgot-password/send-otp`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        });
+      } else {
+        throw new Error(data.message);
+      }
+    } catch (error: any) {
+      toast(error.message, 2000, "error");
+    }
+  }
+
+  let otp = $state("");
+  async function verifyOTP() {
+    try {
+      const res = await fetch(`${SERVER_URL}/forgot-password/verify-otp`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, otp }),
+      });
+      const data = await res.json();
+      if (data.status === "success") {
+        toast(data.message, 2000, "success");
+        step = 3;
+      } else {
+        throw new Error(data.message);
+      }
+    } catch (error: any) {
+      toast(error.message, 2000, "error");
+    }
+  }
 </script>
 
 <div class="container">
   <form class="login-form" onsubmit={handleSubmit}>
     <h1>iTrack</h1>
-    <h3>Welcome</h3>
+    <h3>Admin Login</h3>
     <label for="username">Username</label>
     <div class="inputfield">
       <CircleUserRound size="20" />
@@ -79,9 +163,13 @@
         <EyeOff size="20" onclick={() => togglePasswordVisibility()} />
       {/if}
     </div>
-    <a href="/forgot-password" id="forgot-password" use:link>
+    <button
+      id="forgot-password"
+      type="button"
+      onclick={() => (forgot_password_modal = true)}
+    >
       Forgot Password?
-    </a>
+    </button>
     <button id="submit" type="submit">
       {#if loading}
         <Loader size="12" color="white" />
@@ -89,12 +177,71 @@
         Login
       {/if}
     </button>
-    <div class="register-link">
-      <p>or</p>
-      <a href="/register" use:link>Register</a>
-    </div>
   </form>
 </div>
+
+{#if forgot_password_modal}
+  <div class="modal">
+    <form class="modal-content" onsubmit={submitForgotPassword}>
+      <button class="close" onclick={() => (forgot_password_modal = false)}>
+        &times;
+      </button>
+      {#if step === 1}
+        <h3>Forgot Password</h3>
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          required
+          bind:value={email}
+          placeholder="Enter your email"
+        />
+        <button type="button" onclick={() => submitEmail()}>Next</button>
+      {:else if step === 2}
+        <h3>Forgot Password</h3>
+        <label for="otp">Open {email} inbox to see the OTP</label>
+        <input
+          type="text"
+          id="otp"
+          name="otp"
+          required
+          bind:value={otp}
+          placeholder="Enter the OTP sent to your email"
+        />
+        <button type="button" onclick={() => verifyOTP()}>Next</button>
+      {:else if step === 3}
+        <h3>Forgot Password</h3>
+        <label for="new-password">New Password</label>
+        <input
+          type="password"
+          id="new-password"
+          name="new-password"
+          required
+          bind:value={forgot_password_new}
+          placeholder="Enter your new password"
+        />
+        <label for="confirm-password">Confirm Password</label>
+        <input
+          type="password"
+          id="confirm-password"
+          name="confirm-password"
+          required
+          bind:value={forgot_password_confirm}
+          placeholder="Confirm your new password"
+        />
+        <button type="submit">Submit</button>
+      {:else}
+        <h3>Forgot Password</h3>
+        <p>An error occurred</p>
+        <button type="button" onclick={() => (step = 1)}>Retry</button>
+      {/if}
+      {#if step !== 1}
+        <button type="button" onclick={() => (step -= 1)}>Back</button>
+      {/if}
+    </form>
+  </div>
+{/if}
 
 <style>
   .container {
@@ -195,49 +342,72 @@
       background-position: 100% 50%;
     }
   }
-  .register-link {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    p {
-      margin: 1rem;
-      position: relative;
-      &:before {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: -50px;
-        width: 40px;
-        height: 1px;
-        background-color: var(--border);
-      }
-      &:after {
-        content: "";
-        position: absolute;
-        top: 50%;
-        right: -50px;
-        width: 40px;
-        height: 1px;
-        background-color: var(--border);
-      }
-    }
-    a {
-      color: var(--primary);
-      text-decoration: none;
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-  }
   #forgot-password {
     align-self: flex-end;
     font-size: 0.8rem;
     margin-block: 1rem;
     color: var(--primary);
-    text-decoration: none;
+    background-color: transparent;
     &:hover {
       text-decoration: underline;
+    }
+  }
+
+  .modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  .modal-content {
+    background-color: var(--background);
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    border-radius: 5px;
+    width: 40vw;
+    position: relative;
+
+    input {
+      padding: 0.5rem;
+      border: none;
+      background-color: var(--background);
+      width: 100%;
+      border-bottom: 1px solid var(--border);
+      &:focus {
+        outline: none;
+      }
+    }
+
+    button {
+      padding: 0.5rem;
+      border: none;
+      background-color: var(--primary);
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      &:active {
+        background-color: var(--primary-active);
+      }
+    }
+
+    .close {
+      align-self: flex-end;
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 2rem;
+      color: var(--primary);
+      position: absolute;
+      right: 1rem;
+      top: 1rem;
+      &:hover {
+        color: var(--primary-active);
+      }
     }
   }
 </style>
