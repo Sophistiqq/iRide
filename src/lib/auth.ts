@@ -147,29 +147,21 @@ export async function logout(): Promise<void> {
     push('/');
   }
 }
-// Registration function should have username, fullname, password, email, mobile_number
-export async function register(username: string, password: string, fullname: string, mobile_number: string, email: string): Promise<User | null> {
+// Registration function should accept formData object
+export async function register(formData: FormData): Promise<User | null> {
+  console.log('formData', formData);
   try {
     const response = await fetch(`${SERVER_URL}/register`, {
-      method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password, fullname, mobile_number, email }),
+      method: "POST",
+      body: JSON.stringify(formData),
     });
-
     const data = await response.json();
-
+    console.log('data', data);
     if (data.status === "success") {
-      TokenManager.set(data.token);
-      authStore.set({
-        user: data.user,
-        isAuthenticated: true,
-        isInitialized: true
-      });
-      console.log('data', data);
-      push('/dashboard');
-      return data.user;
+      return data;
     } else {
-      return data
+      return null;
     }
   } catch (error) {
     console.error('Registration error:', error);
