@@ -9,6 +9,7 @@
   import { login } from "../lib/auth";
   import { onMount } from "svelte";
   import { toast } from "../lib/Toast";
+  import { link } from "svelte-spa-router";
   let SERVER_URL = import.meta.env.VITE_SERVER_API_URL;
 
   let username = $state("");
@@ -177,6 +178,11 @@
         Login
       {/if}
     </button>
+
+    <div class="register-link">
+      <p>or</p>
+      <a href="/register" use:link>Register</a>
+    </div>
   </form>
 </div>
 
@@ -407,6 +413,22 @@
       top: 1rem;
       &:hover {
         color: var(--primary-active);
+      }
+    }
+  }
+
+  .register-link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-block: 1rem;
+    flex-direction: column;
+    gap: 0.5rem;
+    a {
+      color: var(--primary);
+      text-decoration: none;
+      &:hover {
+        text-decoration: underline;
       }
     }
   }
