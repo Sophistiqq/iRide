@@ -91,6 +91,7 @@
   --secondary: #ffb703ff;
   --secondary-active: #fb8500ff;
   --secondary-hover: #ffd05a;
+  --border-radius: 5px;
 }
 
 * {

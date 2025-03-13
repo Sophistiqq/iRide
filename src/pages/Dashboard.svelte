@@ -316,12 +316,9 @@
         IncidentReports: 47,
         ErrorLogs: 3,
 
-
-         totalUnits: 18901,
-         activeUnits: 18345,
-    }
-     
-
+        totalUnits: 18901,
+        activeUnits: 18345,
+    };
 </script>
 
 <div class="container">
@@ -335,7 +332,13 @@
                 </div>
                 <h3>{serverStatus.activeUnits}</h3>
                 <p>
-                    <span>{(serverStatus.activeUnits / serverStatus.totalUnits * 100).toFixed(2)}% <MoveUpRight size="16" /></span>
+                    <span
+                        >{(
+                            (serverStatus.activeUnits /
+                                serverStatus.totalUnits) *
+                            100
+                        ).toFixed(2)}% <MoveUpRight size="16" /></span
+                    >
 
                     of total registered
                 </p>
@@ -347,7 +350,14 @@
                 </div>
                 <h3>{serverStatus.totalUnits - serverStatus.activeUnits}</h3>
                 <p>
-                    <span>{(100 - (serverStatus.activeUnits / serverStatus.totalUnits * 100)).toFixed(2)}% <MoveUpRight size="16" /></span>
+                    <span
+                        >{(
+                            100 -
+                            (serverStatus.activeUnits /
+                                serverStatus.totalUnits) *
+                                100
+                        ).toFixed(2)}% <MoveUpRight size="16" /></span
+                    >
                     of total registered
                 </p>
             </div>
@@ -369,37 +379,52 @@
         </div>
         <SvelteFC {...stackedConfigs} />
     </div>
-    <div class="serverinfo"> 
-    <div class="system-info">
+    <div class="serverinfo">
+        <div class="system-info">
+            <h3>General Server Details</h3>
+            <p><Pen /><b>Server Name:</b> {serverStatus.ServerName}</p>
+            <p><MapPin /><b>Server IP Address:</b> {serverStatus.ServerIp}</p>
+            <p><Clock /><b>System Uptime:</b> {serverStatus.SystemUptime}</p>
 
-        <h3>General Server Details</h3>
-        <p><Pen/><b>Server Name:</b> {serverStatus.ServerName}</p>
-        <p><MapPin/><b>Server IP Address:</b> {serverStatus.ServerIp}</p>
-        <p><Clock/><b>System Uptime:</b> {serverStatus.SystemUptime}</p>
-        
-        <h3>Hardware Specifications</h3>
-        <p><Logs/><b>Recent Logs:</b> {serverStatus.RecentLogs}</p>
-        <p><MonitorCheck/><b>Active Sessions:</b> {serverStatus.ActiveSessions}</p>
+            <h3>Hardware Specifications</h3>
+            <p><Logs /><b>Recent Logs:</b> {serverStatus.RecentLogs}</p>
+            <p>
+                <MonitorCheck /><b>Active Sessions:</b>
+                {serverStatus.ActiveSessions}
+            </p>
 
-        <h3>Performance Monitoring</h3>
-        <p><Microchip/><b>CPU Usage:</b> {serverStatus.CPUUsage}</p>
-        <p><Cpu/><b>RAM</b> </p>
-        <p>Total Memory: {serverStatus.RAM}</p>
-        <p><TrafficCone/><b>Network Traffic:</b> {serverStatus.NetworkTraffic}</p>
+            <h3>Performance Monitoring</h3>
+            <p><Microchip /><b>CPU Usage:</b> {serverStatus.CPUUsage}</p>
+            <p><Cpu /><b>RAM</b></p>
+            <p>Total Memory: {serverStatus.RAM}</p>
+            <p>
+                <TrafficCone /><b>Network Traffic:</b>
+                {serverStatus.NetworkTraffic}
+            </p>
 
-        <h3>User and Access Details</h3>
-        <p><UserCheck/><b>Logged-in Users:</b> {serverStatus.LoggedinUsers}</p>
-        <p><BookUser/><b>Access Logs:</b> {serverStatus.AccessLogs}</p>
-        <p><ShieldAlert/><b>Error Logs:</b> {serverStatus.ErrorLogs}</p>
+            <h3>User and Access Details</h3>
+            <p>
+                <UserCheck /><b>Logged-in Users:</b>
+                {serverStatus.LoggedinUsers}
+            </p>
+            <p><BookUser /><b>Access Logs:</b> {serverStatus.AccessLogs}</p>
+            <p><ShieldAlert /><b>Error Logs:</b> {serverStatus.ErrorLogs}</p>
 
-        <h3>Server Events and Alerts</h3>
-        <p><CalendarCheck/><b>Scheduled Maintenance:</b> {serverStatus.ScheduledMaintenance}</p>
-        <p><CircleAlert/><b>Recent Alerts:</b> {serverStatus.RecentAlerts}</p>
-        <p><MessageSquareWarning/><b>Incident Reports:</b> {serverStatus.IncidentReports}</p>
-
-
+            <h3>Server Events and Alerts</h3>
+            <p>
+                <CalendarCheck /><b>Scheduled Maintenance:</b>
+                {serverStatus.ScheduledMaintenance}
+            </p>
+            <p>
+                <CircleAlert /><b>Recent Alerts:</b>
+                {serverStatus.RecentAlerts}
+            </p>
+            <p>
+                <MessageSquareWarning /><b>Incident Reports:</b>
+                {serverStatus.IncidentReports}
+            </p>
+        </div>
     </div>
-</div>
 </div>
 
 <style>
@@ -418,8 +443,8 @@
         p {
             display: flex;
             align-items: center;
-            margin-block: .5rem;
-            gap: .5rem;
+            margin-block: 0.5rem;
+            gap: 0.5rem;
         }
     }
     .dashboard-container {

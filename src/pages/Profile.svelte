@@ -3,9 +3,37 @@
   import { logout } from "../lib/auth";
   import { fly, slide } from "svelte/transition";
   import { toast } from "../lib/Toast";
-  import { CircleUserRound, Eye, EyeOff, LockKeyhole } from "lucide-svelte";
+  import {
+    CircleUserRound,
+    Eye,
+    EyeOff,
+    LockKeyhole,
+    Settings,
+    X,
+  } from "lucide-svelte";
+  import Avatarimage from "../assets/man.png";
   const SERVER_URL = import.meta.env.VITE_SERVER_API_URL;
   let show_password = $state(false);
+  let { onClose } = $props();
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      onClose();
+    }
+  });
+  const default_avatar = "https://avatar.iran.liara.run/public/";
+  let src: any = $state(default_avatar);
+
+  function handleFileChange(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
 
   type User = {
     fullname: string;
@@ -128,9 +156,11 @@
 
 <div class="container">
   <div class="profile">
-    <h1>Settings</h1>
-
     <div class="information">
+      <div class="avatar">
+        <img {src} alt="User Avatar" class="avatar-img" />
+      </div>
+
       <h1>{user_data.fullname}</h1>
       <p>{user_data.username}</p>
 
@@ -151,7 +181,7 @@
 <div class="settings">
   <button
     class="settingsbutton"
-    onclick={() => (SettingsDropdown = !SettingsDropdown)}>⚙️</button
+    onclick={() => (SettingsDropdown = !SettingsDropdown)}><Settings /></button
   >
   {#if SettingsDropdown}
     <div class="settings-container visible" transition:slide={{ axis: "y" }}>
@@ -253,63 +283,83 @@
 
 {#if EditProfileModal}
   <div class="modal" transition:fly>
-    <form onsubmit={submitProfileEdit}>
-      <h1>Edit Profile</h1>
-
-      <div class="inputfield">
-        <label for="fullname">Full Name</label>
+    <div class="modalcontents">
+      <div class="avatar-picker">
+        <img {src} alt="User Avatar" />
         <input
-          type="text"
-          id="fullname"
-          bind:value={editFullname}
-          placeholder="Enter full name"
+          type="file"
+          accept="image/*"
+          id="filepicker"
+          placeholder="Choose an image"
+          onchange={handleFileChange}
+          style="display: none;"
         />
-      </div>
 
-      <div class="inputfield">
-        <label for="username">Username</label>
-        <input
-          type="text"
-          id="username"
-          bind:value={editUsername}
-          placeholder="Enter username"
-        />
-      </div>
-
-      <div class="inputfield">
-        <label for="email">Email</label>
-        <input
-          type="email"
-          id="email"
-          bind:value={editEmail}
-          placeholder="Enter email"
-        />
-      </div>
-
-      <div class="inputfield">
-        <label for="mobile_number">Mobile Number</label>
-        <input
-          type="text"
-          id="mobile_number"
-          bind:value={editMobileNumber}
-          placeholder="Enter mobile number"
-        />
-      </div>
-
-      <div class="buttons">
         <button
           type="button"
-          class="cancel"
-          onclick={() => (EditProfileModal = false)}>Cancel</button
+          id="avatar"
+          onclick={() => document.getElementById("filepicker")?.click()}
+          >Select a new picture?</button
         >
-        <button type="submit" class="submit">Save</button>
       </div>
-    </form>
+
+      <form class="form1" onsubmit={submitProfileEdit}>
+        <label for="fullname">Full Name</label>
+        <div class="inputfield2">
+          <input
+            type="text"
+            id="fullname"
+            bind:value={editFullname}
+            placeholder="Enter fullname"
+          />
+        </div>
+
+        <label for="username">Username</label>
+        <div class="inputfield2">
+          <input
+            type="text"
+            id="username"
+            bind:value={editUsername}
+            placeholder="Enter username"
+          />
+        </div>
+
+        <label for="email">Email</label>
+        <div class="inputfield2">
+          <input
+            type="email"
+            id="email"
+            bind:value={editEmail}
+            placeholder="Enter email"
+          />
+        </div>
+
+        <label for="mobile_number">Mobile Number</label>
+        <div class="inputfield2">
+          <input
+            type="text"
+            id="mobile_number"
+            bind:value={editMobileNumber}
+            placeholder="Enter mobile number"
+          />
+        </div>
+
+        <div class="buttons">
+          <button
+            type="button"
+            class="cancel"
+            onclick={() => (EditProfileModal = false)}
+          >
+            Cancel
+          </button>
+          <button type="submit" class="submit">Save</button>
+        </div>
+      </form>
+    </div>
   </div>
 {/if}
 
 <style lang="scss">
-  /* Profile Section */
   .container {
     display: flex;
     flex-direction: column;
@@ -334,9 +384,44 @@
     margin-bottom: 20px;
   }
 
+  .avatar-img {
+    margin-top: 2rem;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .avatar-picker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-right: 2rem;
+    img {
+      width: fit-content;
+      border-radius: 50%;
+      aspect-ratio: 1/1;
+      margin-bottom: 1rem;
+    }
+
+    #avatar {
+      border: none;
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      background-color: transparent;
+      transition: background-color 0.3s;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
   .profile {
     border: 1px solid #ddd;
-    height: 50%;
+    height: 70%;
   }
 
   .profile2 {
@@ -375,9 +460,9 @@
   .about {
     padding: 20px;
     height: 50%;
-    border: 1px solid #ddd; /* Border to separate about section */
+    border: 1px solid #ddd;
     border-radius: 8px;
-    background-color: #f9f9f9; /* Light background */
+    background-color: #f9f9f9;
     margin-top: 20px;
     height: 50%;
   }
@@ -387,7 +472,6 @@
     margin-bottom: 10px;
   }
 
-  // MODAL STYLE
   .modal {
     position: fixed;
     inset: 0;
@@ -397,6 +481,15 @@
     z-index: 100;
     background-color: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(5px);
+  }
+
+  .modalcontents {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--background);
+    border-radius: var(--border-radius);
+    padding: 3rem;
   }
 
   input {
@@ -417,11 +510,11 @@
     border-radius: 8px;
     padding: 2rem;
     width: 100%;
+    flex-direction: column;
     max-width: 400px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     color: #333;
     display: flex;
-    flex-direction: column;
     gap: 1rem;
     h1 {
       font-size: 1.8rem;
@@ -469,7 +562,6 @@
 
   .inputfield {
     display: flex;
-    // border: 1px solid red;
     justify-content: space-between;
     align-items: center;
     gap: 0.5rem;
@@ -488,12 +580,31 @@
     }
   }
 
-  // Settings Style
+  .inputfield2 {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    padding-inline: 0.5rem;
+    &:focus-within {
+      border: 1px solid var(--accent);
+      border-radius: 0.5rem;
+    }
+    input {
+      margin: 0;
+      width: 100%;
+      border: none;
+      background: transparent;
+    }
+  }
+
+  .modal label {
+    margin-bottom: -0.9rem;
+  }
+
   .settings {
     position: absolute;
     top: 20px;
     right: 20px;
-    z-index: 100; /* Ensure it's above other content */
+    z-index: 100;
   }
 
   .settingsbutton {
@@ -504,12 +615,9 @@
     border-radius: 50%;
     cursor: pointer;
     transition: all 0.3s ease-in-out;
-    &:hover {
+    &:active {
       background-color: var(--primary);
       transform: scale(1.1) rotate(180deg); /* Slight rotation effect */
-    }
-    &:active {
-      background-color: var(--primary-active);
     }
   }
 
@@ -576,5 +684,11 @@
   .settings-container button:focus {
     outline: none;
     box-shadow: 0 0 4px 2px rgba(0, 123, 255, 0.6); /* Blue outline */
+  }
+
+  @media (max-width: 768px) {
+    .modalcontents {
+      flex-direction: column;
+    }
   }
 </style>
