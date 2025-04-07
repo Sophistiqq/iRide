@@ -10,6 +10,7 @@
   import { onMount } from "svelte";
   import { toast } from "../lib/Toast";
   import { link } from "svelte-spa-router";
+  import { fade } from "svelte/transition";
   let SERVER_URL = import.meta.env.VITE_SERVER_API_URL;
 
   let username = $state("");
@@ -131,10 +132,10 @@
   }
 </script>
 
-<div class="container">
+<div class="container" in:fade={{ duration: 200 }}>
   <form class="login-form" onsubmit={handleSubmit}>
     <h1>iTrack</h1>
-    <h3>Admin Login</h3>
+    <h3>Login</h3>
     <label for="username">Username</label>
     <div class="inputfield">
       <CircleUserRound size="20" />

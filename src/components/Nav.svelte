@@ -13,6 +13,14 @@
 
 <nav>
   <h1 id="title"><img src={mapMarker} alt="Map Marker" /> iTrack</h1>
+
+  <a href="/testing" use:link class={activePage === "/testing" ? "active" : ""}>
+    <LayoutDashboard
+      size="24"
+      color={activePage === "/testing" ? "var(--accent)" : "#333"}
+    />
+    <p>Testing</p>
+  </a>
   <a
     href="/dashboard"
     use:link

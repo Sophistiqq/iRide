@@ -148,7 +148,7 @@ export async function logout(): Promise<void> {
   }
 }
 // Registration function should accept formData object
-export async function register(formData: FormData): Promise<User | null> {
+export async function register(formData: any): Promise<User | null> {
   console.log('formData', formData);
   try {
     const response = await fetch(`${SERVER_URL}/register`, {

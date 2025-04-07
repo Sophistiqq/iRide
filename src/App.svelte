@@ -13,6 +13,8 @@
   import { checkAuth, authStore } from "./lib/auth";
   import { Loader } from "lucide-svelte";
   import Nav from "./components/Nav.svelte";
+  import Testing from "./pages/Testing.svelte";
+
   const routes = {
     "/": Login,
     "/register": Register,
@@ -21,11 +23,12 @@
     "/dashboard": Dashboard,
     "/profile": Profile,
     "/map": Map,
+    "/testing": Testing,
   };
 
-  // Subscribe to route changes
   $: {
     const path = $location;
+
     if ($authStore.isInitialized) {
       if (
         $authStore.isAuthenticated &&
@@ -45,14 +48,14 @@
 
 {#if !$authStore.isInitialized}
   <div class="loading-container">
-    <Loader size={40} />
+    <Loader size={40}></Loader>
   </div>
 {:else}
   <div class="container">
     {#if $authStore.isAuthenticated}
-      <Nav />
+      <Nav></Nav>
     {/if}
-    <Router {routes} />
+    <Router {routes}></Router>
   </div>
 {/if}
 

@@ -14,6 +14,7 @@
     RefreshCw,
   } from "lucide-svelte";
   import { toast } from "../lib/Toast";
+  import { fade } from "svelte/transition";
 
   let username = $state("");
   let email = $state("");
@@ -27,11 +28,16 @@
   let account_type = $state("Individual"); // Default value
   let avatarId = $state(1);
   let loading = $state(false);
+  let avatar_loading = $state(false);
 
   const avatarUrl = () => `https://avatar.iran.liara.run/public/${avatarId}`;
 
   function nextAvatar() {
-    avatarId = avatarId >= 10 ? 1 : avatarId + 1;
+    avatar_loading = true;
+    avatarId = Math.floor(Math.random() * 99) + 1;
+    setTimeout(() => {
+      avatar_loading = false;
+    }, 1000); // Simulate loading time
   }
 
   async function handleSubmit(e: Event) {
@@ -98,21 +104,27 @@
   }
 </script>
 
-<div class="container">
+<div class="container" in:fade={{ duration: 200 }}>
+  <h2>Register an Account</h2>
   <div class="avatar-section">
-    <h2>Choose Avatar</h2>
     <div class="avatar-container">
       <img src={avatarUrl()} alt="User Avatar" class="avatar-preview" />
       <button type="button" class="avatar-button" onclick={nextAvatar}>
-        <RefreshCw size="18" />
-        <span>Try Another</span>
+        <RefreshCw size="18" color="white" />
+        <span>
+          {#if avatar_loading}
+            Please wait...
+          {:else}
+            Try Another
+          {/if}
+        </span>
       </button>
     </div>
   </div>
 
   <form class="register-form" onsubmit={handleSubmit}>
-    <h1>iTrack</h1>
-    <h3>Create Account</h3>
+    <h1 id="title">iTrack</h1>
+    <h3>Account Information</h3>
 
     <div class="input-container">
       <label for="name">Full Name</label>
@@ -278,7 +290,7 @@
     display: flex;
     flex-direction: row;
     justify-content: center;
-    align-items: flex-start;
+    align-items: center;
     height: 100svh;
     width: 100%;
     gap: 2rem;
@@ -292,7 +304,6 @@
     padding: 2rem;
     background-color: var(--background-alt);
     border-radius: 10px;
-    margin-top: 6rem;
   }
 
   .avatar-container {
@@ -304,8 +315,8 @@
   }
 
   .avatar-preview {
-    width: 150px;
-    height: 150px;
+    width: 300px;
+    height: 300px;
     border-radius: 50%;
     border: 3px solid var(--primary);
     object-fit: cover;
@@ -315,13 +326,16 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    width: 9rem;
     padding: 0.5rem 1rem;
     background-color: var(--primary);
-    color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
+    span {
+      color: white;
+    }
   }
 
   .avatar-button:hover {
@@ -346,7 +360,6 @@
     max-width: 800px;
     background-color: var(--background);
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 
     & h1 {
       grid-column: 1 / -1;
@@ -416,20 +429,37 @@
   @media (max-width: 992px) {
     .container {
       flex-direction: column;
-      align-items: center;
       height: auto;
+      justify-content: flex-start;
       padding: 1rem;
+      gap: 0;
+      overflow-y: auto;
+    }
+
+    #title {
+      display: none;
     }
 
     .avatar-section {
-      margin-top: 1rem;
+      padding: 1rem;
       width: 100%;
       max-width: 800px;
+      margin-top: 0rem;
+      .avatar-preview {
+        width: 150px;
+        height: 150px;
+      }
+      .avatar-button {
+        &:hover {
+          background-color: var(--primary);
+        }
+      }
     }
 
     .register-form {
       grid-template-columns: 1fr 1fr;
       width: 100%;
+      padding: 1rem;
       max-width: 800px;
     }
   }

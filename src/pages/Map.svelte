@@ -1,178 +1,144 @@
 <script lang="ts">
-  import { Loader } from "@googlemaps/js-api-loader";
+  import L from "leaflet";
+  import "leaflet/dist/leaflet.css";
   import { onMount, onDestroy } from "svelte";
-  import { writable } from "svelte/store";
-  import mapMarker from "../assets/icon.png";
-  //import { mapStyle } from "../components/mapStyles";
-  let map: google.maps.Map;
-  let eventSource: EventSource | null = null;
-  let markerInfoWindow: google.maps.InfoWindow;
-  const SERVER_URL = import.meta.env.VITE_SERVER_API_URL;
-  const markers = writable(
-    new Map<string, google.maps.marker.AdvancedMarkerElement>(),
-  );
+  import { ServerDataListener } from "../lib/ServerDataListener";
+  import mapMarker from "../assets/marker.png";
+  // Map and marker references
+  let map: any;
+  let markers: any = new Map();
 
-  // Add a Set to track active device IDs
-  let activeDevices = new Set<string>();
+  // Server data listener
+  let dataListener: ServerDataListener;
 
-  async function initializeMap() {
-    const loader = new Loader({
-      apiKey: "AIzaSyBTVoAYJ7vxQ5cSiIRYDc7_b0nJB-X6QR8",
-      version: "weekly",
-      libraries: ["places", "marker"],
-    });
-
-    // Load all required libraries first
-    const { Map } = await loader.importLibrary("maps");
-    const { InfoWindow } = (await loader.importLibrary(
-      "maps",
-    )) as google.maps.MapsLibrary;
-
-    // Initialize map
-    map = new Map(document.getElementById("map") as HTMLElement, {
-      center: { lat: 14.7289, lng: 121.1441 },
-      zoom: 16,
-      zoomControl: false,
-      //styles: mapStyle,
-      streetViewControl: true,
-      rotateControl: true,
-      mapTypeControl: true,
-      mapTypeControlOptions: {
-        style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
-        mapTypeIds: ["roadmap", "satellite", "terrain", "hybrid"],
-      },
-      mapId: "f1b7b3e3b1b3b7f",
-    });
-    const trafficLayer = new google.maps.TrafficLayer();
-    trafficLayer.setMap(map);
-    // Initialize InfoWindow after map is created
-    markerInfoWindow = new InfoWindow();
-
-    // Only start SSE after map is fully initialized
-    listenFromSSE();
-  }
-
-  function listenFromSSE() {
-    if (eventSource) {
-      eventSource.close();
-    }
-
-    eventSource = new EventSource(`${SERVER_URL}/events`);
-
-    let updateTimeout: number;
-    eventSource.onmessage = (event) => {
-      if (updateTimeout) {
-        window.clearTimeout(updateTimeout);
-      }
-
-      updateTimeout = window.setTimeout(() => {
-        // Clear the active devices set before processing new data
-        activeDevices.clear();
-
-        const locationsArray = JSON.parse(event.data);
-        locationsArray.forEach((location: any) => {
-          // Add each device ID to the active set
-          activeDevices.add(location.device_id);
-          updateMarker(location);
-        });
-
-        // Remove markers for devices not in the current update
-        removeStaleMarkers();
-      }, 100);
-    };
-  }
-
-  // New function to remove stale markers
-  function removeStaleMarkers() {
-    markers.update((markersMap) => {
-      for (const [deviceId, marker] of markersMap.entries()) {
-        if (!activeDevices.has(deviceId)) {
-          // Remove the marker from the map
-          marker.map = null;
-          // Delete the marker from our collection
-          markersMap.delete(deviceId);
-        }
-      }
-      return markersMap;
-    });
-  }
-
-  async function updateMarker(data: any) {
-    if (!map) return;
-
-    const { AdvancedMarkerElement } = (await google.maps.importLibrary(
-      "marker",
-    )) as google.maps.MarkerLibrary;
-
-    markers.update((markersMap) => {
-      const position = { lat: data.latitude, lng: data.longitude };
-      let marker = markersMap.get(data.device_id);
-
-      // Function to generate the InfoWindow content
-      const getContentString = (data: any) => {
-        return (
-          `<div style="font-family: Arial, sans-serif; font-size: 14px;" id="content">` +
-          `<h2 style="margin: 0; padding: 0;">${data.device_id}</h2>` +
-          `<div style="margin-top: 5px;">` +
-          `<b>Latitude:</b> ${data.latitude}<br>` +
-          `<b>Longitude:</b> ${data.longitude}<br>` +
-          `<b>Timestamp:</b> ${new Date(data.timestamp).toLocaleString()}<br>` +
-          `</div>` +
-          `</div>`
-        );
-      };
-
-      if (marker) {
-        // Update the marker's position
-        marker.position = position;
-        (marker as any).myData = data;
-
-        // Update the InfoWindow content if it's currently open for this marker
-        if (
-          markerInfoWindow.get("map") &&
-          markerInfoWindow.get("anchor") === marker
-        ) {
-          markerInfoWindow.setContent(getContentString(data));
-        }
-      } else {
-        // Create an img element for the custom marker
-        const markerImg = document.createElement("img");
-        markerImg.src = mapMarker;
-        markerImg.style.width = "30px"; // Adjust the size as needed
-        markerImg.style.height = "40px";
-
-        // Create the AdvancedMarkerElement with the custom image as content
-        marker = new AdvancedMarkerElement({
-          position,
-          map,
-          title: `Device ${data.device_id}`,
-          content: markerImg, // Set the custom image as the content
-        });
-
-        (marker as any).myData = data;
-
-        // Add a click listener to open the InfoWindow
-        marker.addListener("click", () => {
-          markerInfoWindow.setContent(getContentString(data));
-          markerInfoWindow.open(map, marker);
-        });
-
-        markersMap.set(data.device_id, marker);
-      }
-
-      return markersMap;
-    });
-  }
-
-  onDestroy(() => {
-    if (eventSource) {
-      eventSource.close();
-    }
-  });
+  // Custom marker icon
+  let deviceIcon: any;
 
   onMount(() => {
-    initializeMap();
+    // Initialize map
+    map = L.map("map", {
+      center: [14.735802391023922, 121.15087217180371],
+      zoom: 13,
+      zoomControl: false,
+    });
+
+    // onclick event
+    map.on("click", handleMapClick);
+
+    // Add tile layer
+    L.tileLayer(
+      "https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.{ext}",
+      {
+        minZoom: 0,
+        maxZoom: 20,
+        attribution:
+          '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        ext: "png",
+      },
+    ).addTo(map);
+
+    // Initialize custom icon (optional)
+    deviceIcon = L.icon({
+      iconUrl: mapMarker, // Replace with your icon path or use default
+      iconSize: [50, 50],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+    });
+
+    // Add zoom control in a custom position if needed
+    L.control.zoom({ position: "bottomright" }).addTo(map);
+
+    // Initialize the data listener
+    dataListener = new ServerDataListener();
+
+    // Subscribe to device data updates
+    const unsubscribe = dataListener.deviceData.subscribe((deviceMap) => {
+      updateMarkers(deviceMap);
+    });
+
+    // Start listening for data
+    dataListener.start();
+
+    return () => {
+      unsubscribe();
+    };
   });
+
+  onDestroy(() => {
+    if (dataListener) {
+      dataListener.stop();
+    }
+
+    // Clean up map if needed
+    if (map) {
+      map.remove();
+    }
+  });
+
+  // Function to update markers based on device data
+  function updateMarkers(deviceMap: Map<string, any>): void {
+    // Track current device IDs to remove stale markers
+    const currentDeviceIds = new Set(deviceMap.keys());
+
+    // Add/update markers for each device
+    deviceMap.forEach((device, deviceId) => {
+      const position = L.latLng(device.latitude, device.longitude);
+
+      // Create popup content
+      const popupContent = `
+        <div class="popup-content">
+          <h3>${deviceId}</h3>
+          <p><b>Latitude:</b> ${device.latitude}</p>
+          <p><b>Longitude:</b> ${device.longitude}</p>
+          <p><b>Timestamp:</b> ${new Date(device.timestamp).toLocaleString()}</p>
+        </div>
+      `;
+
+      if (markers.has(deviceId)) {
+        // Update existing marker
+        const marker = markers.get(deviceId)!;
+        marker.setLatLng(position);
+
+        // Update popup content if it exists
+        const popup = marker.getPopup();
+        if (popup) {
+          popup.setContent(popupContent);
+        }
+      } else {
+        // Create new marker
+        const markerOptions = deviceIcon ? { icon: deviceIcon } : {};
+        const marker = L.marker(position, markerOptions)
+          .bindPopup(popupContent)
+          .bindTooltip(deviceId)
+          .addTo(map);
+
+        markers.set(deviceId, marker);
+      }
+    });
+
+    // Remove stale markers
+    markers.forEach((marker: any, deviceId: string) => {
+      if (!currentDeviceIds.has(deviceId)) {
+        map.removeLayer(marker);
+        markers.delete(deviceId);
+      }
+    });
+
+    // Auto-fit bounds if we have markers and this is the first update
+    if (markers.size > 0 && currentDeviceIds.size !== markers.size) {
+      const bounds = L.latLngBounds(
+        Array.from(markers.values()).map((marker) => marker.getLatLng()),
+      );
+      map.fitBounds(bounds, { padding: [50, 50] });
+    }
+  }
+
+  // Handle map click event (from your original code)
+  function handleMapClick(event: any) {
+    const { lat, lng } = event.latlng;
+    alert(`Clicked at: ${lat}, ${lng}`);
+    // Add any additional click handling logic here
+  }
 </script>
 
 <div class="container">
@@ -181,15 +147,18 @@
 
 <style>
   .container {
-    width: 100vw;
-  }
-  /* Fullscreen map container */
-  #map {
-    height: 100vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: 100svh;
     width: 100%;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    gap: 2rem;
   }
-
+  #map {
+    width: 100%;
+    height: 100%;
+  }
   @media (max-width: 768px) {
     .container {
       width: 100vw;
@@ -199,5 +168,20 @@
     #map {
       height: 100%;
     }
+  }
+
+  /* Additional styles for popups - these will be applied globally */
+  :global(.popup-content) {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+  }
+
+  :global(.popup-content h3) {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+  }
+
+  :global(.popup-content p) {
+    margin: 4px 0;
   }
 </style>
