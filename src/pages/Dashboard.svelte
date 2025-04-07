@@ -1,481 +1,725 @@
 <script lang="ts">
-    import FusionCharts from "fusioncharts";
+  import FusionCharts from "fusioncharts";
+  import Charts from "fusioncharts/fusioncharts.charts";
+  import FusionTheme from "fusioncharts/themes/fusioncharts.theme.fusion";
+  import { Bus, CircleAlert, Cpu, Microchip, TrafficCone } from "lucide-svelte";
 
-    import Charts from "fusioncharts/fusioncharts.charts";
+  import SvelteFC, { fcRoot } from "svelte-fusioncharts";
 
-    import FusionTheme from "fusioncharts/themes/fusioncharts.theme.fusion";
-    import {
-        BookUser,
-        Bus,
-        CalendarCheck,
-        CircleAlert,
-        CircleOff,
-        Clock,
-        Cpu,
-        LoaderPinwheel,
-        Logs,
-        LucideNotepadTextDashed,
-        MapPin,
-        MessageCircleWarning,
-        MessageSquareWarning,
-        Microchip,
-        MonitorCheck,
-        MoveUpRight,
-        Pen,
-        ShieldAlert,
-        TrafficCone,
-        TriangleAlert,
-        UserCheck,
-    } from "lucide-svelte";
+  fcRoot(FusionCharts, Charts, FusionTheme);
 
-    import SvelteFC, { fcRoot } from "svelte-fusioncharts";
+  // Monthly production data
+  const barData = [
+    { label: "January", value: "11290" },
+    { label: "February", value: "11360" },
+    { label: "March", value: "12280" },
+    { label: "April", value: "12540" },
+    { label: "May", value: "14815" },
+    { label: "June", value: "14950" },
+    { label: "July", value: "15230" },
+    { label: "August", value: "16330" },
+    { label: "September", value: "16630" },
+    { label: "October", value: "17930" },
+    { label: "November", value: "18630" },
+    { label: "December", value: "18901" },
+  ];
 
-    fcRoot(FusionCharts, Charts, FusionTheme);
+  // Chart configurations
+  const chartConfigs = {
+    type: "column2d",
+    width: "100%",
+    height: 300,
+    dataFormat: "json",
+    dataSource: {
+      chart: {
+        caption: "Monthly Production",
+        subCaption: "Bus Fleet",
+        xAxisName: "Month",
+        yAxisName: "Total Operational Buses",
+        theme: "fusion",
+        bgColor: "#FFFFFF",
+        showBorder: "0",
+        showCanvasBorder: "0",
+        plotBorderAlpha: "10",
+        usePlotGradientColor: "1",
+        plotFillAlpha: "95",
+        showValues: "1",
+        showAlternateHGridColor: "0",
+        divLineColor: "#CCCCCC",
+        showToolTip: "1",
+        toolTipBgColor: "#484E69",
+        toolTipPadding: "5",
+        toolTipBorderRadius: "2",
+        toolTipBorderThickness: "1",
+        toolTipBorderColor: "#484E69",
+        toolTipBorderAlpha: "30",
+      },
+      data: barData,
+    },
+  };
 
-    const barData = [
-        { label: "January", value: "11290" },
-        { label: "February", value: "11360" },
-        { label: "March", value: "12280" },
-        { label: "April", value: "12540" },
-        { label: "May", value: "14815" },
-        { label: "June", value: "14950" },
-        { label: "July", value: "15230" },
-        { label: "August", value: "16330" },
-        { label: "September", value: "16630" },
-        { label: "October", value: "17930" },
-        { label: "November", value: "18630" },
-        { label: "December", value: "18901" },
-    ];
+  // Pie chart data & config
+  const pieData = {
+    chart: {
+      caption: "Fleet Status",
+      subcaption: "Active vs Inactive",
+      showvalues: "1",
+      showpercentintooltip: "0",
+      enablemultislicing: "1",
+      theme: "fusion",
+      useDataPlotColorForLabels: "1",
+      bgColor: "#FFFFFF",
+      showBorder: "0",
+      plotBorderAlpha: "10",
+    },
+    data: [
+      {
+        label: "Active",
+        value: "18345",
+        color: "#4CAF50",
+      },
+      {
+        label: "Inactive",
+        value: "556",
+        color: "#FF5252",
+      },
+    ],
+  };
 
-    //Create your configuration object
-    const chartConfigs = {
-        type: "column2d", //Select the chart type
-        width: 700, //Set the width of the chart
-        height: 300, //Set the height of the chart
-        dataFormat: "json", //Set the input dataFormat to json
-        dataSource: {
-            chart: {
-                caption: "Monthly Production", //Set the caption to your chart
-                subCaption: "Bus ", //Set a sub-caption to your chart
-                xAxisName: "Month", //Assign a relevant name to your x-axis
-                yAxisName: "Total Operational Buses",
-                theme: "fusion", //Apply a theme to your chart
-            },
-            //Include chartData from STEP 2
-            data: barData,
-        },
-    };
+  const pieConfigs = {
+    type: "pie2d",
+    width: "100%",
+    height: 300,
+    dataFormat: "json",
+    dataSource: pieData,
+  };
 
-    const pieData = {
-        chart: {
-            caption: "Recommended Portfolio Split",
-            subcaption: "For a net-worth of $1M",
-            showvalues: "1",
-            showpercentintooltip: "0",
-            numberprefix: "$",
-            enablemultislicing: "1",
-            theme: "candy",
-        },
+  // Line chart data & config
+  const lineData = {
+    chart: {
+      caption: "Daily Performance Metrics",
+      yaxisname: "Usage (%)",
+      subcaption: "Last 7 Days",
+      showhovereffect: "1",
+      numbersuffix: "%",
+      drawcrossline: "1",
+      theme: "fusion",
+      bgColor: "#FFFFFF",
+      showBorder: "0",
+    },
+    categories: [
+      {
+        category: [
+          { label: "Mon" },
+          { label: "Tue" },
+          { label: "Wed" },
+          { label: "Thu" },
+          { label: "Fri" },
+          { label: "Sat" },
+          { label: "Sun" },
+        ],
+      },
+    ],
+    dataset: [
+      {
+        seriesname: "On-Time Rate",
+        color: "#3F51B5",
         data: [
-            {
-                label: "Equity",
-                value: "300000",
-            },
-            {
-                label: "Debt",
-                value: "230000",
-            },
-            {
-                label: "Bullion",
-                value: "180000",
-            },
-            {
-                label: "Real-estate",
-                value: "270000",
-            },
-            {
-                label: "Insurance",
-                value: "20000",
-            },
+          { value: "92" },
+          { value: "88" },
+          { value: "90" },
+          { value: "91" },
+          { value: "94" },
+          { value: "95" },
+          { value: "93" },
         ],
-    };
-
-    const pieConfigs = {
-        type: "pie2d",
-        width: 315,
-        height: 300,
-        dataFormat: "json",
-        dataSource: pieData,
-    };
-
-    const lineData = {
-        chart: {
-            caption: "Reach of Social Media Platforms amoung Adults",
-            yaxisname: "% of Adults on this platform",
-            subcaption: "2018-2023",
-            showhovereffect: "1",
-            numbersuffix: "%",
-            drawcrossline: "1",
-            plottooltext: "<b>$dataValue</b> of Adults were on $seriesName",
-            theme: "candy",
-        },
-        categories: [
-            {
-                category: [
-                    {
-                        label: "2018",
-                    },
-                    {
-                        label: "2019",
-                    },
-                    {
-                        label: "2021",
-                    },
-                    {
-                        label: "2023",
-                    },
-                ],
-            },
+      },
+      {
+        seriesname: "Fuel Efficiency",
+        color: "#4CAF50",
+        data: [
+          { value: "87" },
+          { value: "85" },
+          { value: "88" },
+          { value: "86" },
+          { value: "89" },
+          { value: "90" },
+          { value: "91" },
         ],
-        dataset: [
-            {
-                seriesname: "Facebook",
-                data: [
-                    {
-                        value: "68",
-                    },
-                    {
-                        value: "69",
-                    },
-                    {
-                        value: "69",
-                    },
-                    {
-                        value: "68",
-                    },
-                ],
-            },
-            {
-                seriesname: "Instagram",
-                data: [
-                    {
-                        value: "35",
-                    },
-                    {
-                        value: "37",
-                    },
-                    {
-                        value: "40",
-                    },
-                    {
-                        value: "47",
-                    },
-                ],
-            },
-            {
-                seriesname: "LinkedIn",
-                data: [
-                    {
-                        value: "25",
-                    },
-                    {
-                        value: "27",
-                    },
-                    {
-                        value: "28",
-                    },
-                    {
-                        value: "30",
-                    },
-                ],
-            },
-            {
-                seriesname: "Twitter",
-                data: [
-                    {
-                        value: "24",
-                    },
-                    {
-                        value: "22",
-                    },
-                    {
-                        value: "23",
-                    },
-                    {
-                        value: "22",
-                    },
-                ],
-            },
+      },
+      {
+        seriesname: "Capacity Utilization",
+        color: "#FF9800",
+        data: [
+          { value: "75" },
+          { value: "78" },
+          { value: "82" },
+          { value: "79" },
+          { value: "85" },
+          { value: "71" },
+          { value: "68" },
         ],
-    };
+      },
+    ],
+  };
 
-    const lineConfigs = {
-        type: "msline",
-        width: 315,
-        height: 300,
-        dataFormat: "json",
-        dataSource: lineData,
-    };
+  const lineConfigs = {
+    type: "msline",
+    width: "100%",
+    height: 300,
+    dataFormat: "json",
+    dataSource: lineData,
+  };
 
-    const stackedData = {
-        chart: {
-            caption: "Total Sales by Products",
-            subcaption: "ACME Inc.",
-            numberprefix: "$",
-            numbersuffix: "M",
-            showvalues: "0",
-            showsum: "1",
-            legendbgalpha: "0",
-            plottooltext:
-                "Type: $label{br}<b>Location: $seriesName</b>{br}Sales: $dataValue</div>",
-            stack100percent: "1",
-            theme: "candy",
-        },
-        categories: [
-            {
-                category: [
-                    {
-                        label: "Hardware",
-                    },
-                    {
-                        label: "Software",
-                    },
-                    {
-                        label: "Services",
-                    },
-                ],
-            },
-        ],
-        dataset: [
-            {
-                seriesname: "West",
-                data: [
-                    {
-                        value: "4.5",
-                    },
-                    {
-                        value: "2.8",
-                    },
-                    {
-                        value: "5",
-                    },
-                ],
-            },
-            {
-                seriesname: "Central",
-                data: [
-                    {
-                        value: "6",
-                    },
-                    {
-                        value: "3",
-                    },
-                    {
-                        value: "1",
-                    },
-                ],
-            },
-            {
-                seriesname: "East",
-                data: [
-                    {
-                        value: "2.5",
-                    },
-                    {
-                        value: "4.4",
-                    },
-                    {
-                        value: "2",
-                    },
-                ],
-            },
-        ],
-    };
+  // Server status data
+  let serverStatus = {
+    SystemUptime: 211,
+    RAM: 20,
+    RecentLogs: 604,
+    ActiveSessions: 849,
+    ServerName: "iTrack",
+    ServerIp: "10.0.0.1",
+    CPUUsage: 70,
+    NetworkTraffic: 35,
+    LoggedinUsers: 853,
+    AccessLogs: 18901,
+    ScheduledMaintenance: "May 15, 2025",
+    RecentAlerts: 583,
+    IncidentReports: 47,
+    ErrorLogs: 3,
+    totalUnits: 18901,
+    activeUnits: 18345,
+  };
 
-    const stackedConfigs = {
-        type: "stackedcolumn2d",
-        width: 315,
-        height: 300,
-        dataFormat: "json",
-        dataSource: stackedData,
-    };
+  // Alerts data
+  const recentAlerts = [
+    {
+      id: 1,
+      title: "Low Fuel Warning",
+      unit: "Bus #2453",
+      time: "10:23 AM",
+      severity: "high",
+    },
+    {
+      id: 2,
+      title: "Maintenance Due",
+      unit: "Bus #1872",
+      time: "Yesterday",
+      severity: "medium",
+    },
+    {
+      id: 3,
+      title: "Route Delay",
+      unit: "Bus #3124",
+      time: "09:15 AM",
+      severity: "low",
+    },
+    {
+      id: 4,
+      title: "GPS Signal Lost",
+      unit: "Bus #4209",
+      time: "08:30 AM",
+      severity: "medium",
+    },
+  ];
 
-    let serverStatus = {
-        SystemUptime: 211,
-        RAM: 20,
-        RecentLogs: 604,
-        ActiveSessions: 849,
-        ServerName: "iTrack",
-        ServerIp: "10.0.0.1",
-        CPUUsage: 70,
-        NetworkTraffic: 35,
-        LoggedinUsers: 853,
-        AccessLogs: 18901,
-        ScheduledMaintenance: "May 15, 2025",
-        RecentAlerts: 583,
-        IncidentReports: 47,
-        ErrorLogs: 3,
+  // Calculate percentages
+  const activePercentage = (
+    (serverStatus.activeUnits / serverStatus.totalUnits) *
+    100
+  ).toFixed(1);
+  const inactivePercentage = (100 - parseFloat(activePercentage)).toFixed(1);
 
-        totalUnits: 18901,
-        activeUnits: 18345,
-    };
+  // Progress bar component
+  function getProgressColor(value) {
+    if (value > 80) return "var(--danger-color)";
+    if (value > 60) return "var(--warning-color)";
+    return "var(--success-color)";
+  }
 </script>
 
-<div class="container">
-    <div class="dashboard-container">
-        <h1>Dashboard</h1>
-        <div class="overview">
-            <div class="active-units-container">
-                <div class="text-icon">
-                    <h4>Active Units</h4>
-                    <Bus color="Green" />
-                </div>
-                <h3>{serverStatus.activeUnits}</h3>
-                <p>
-                    <span
-                        >{(
-                            (serverStatus.activeUnits /
-                                serverStatus.totalUnits) *
-                            100
-                        ).toFixed(2)}% <MoveUpRight size="16" /></span
-                    >
+<div class="app-container">
+  <!-- Main Content -->
+  <main class="main-content">
+    <header class="main-header">
+      <h1>Bus Fleet Management Dashboard</h1>
+    </header>
 
-                    of total registered
-                </p>
+    <div class="content-area">
+      <!-- Stats Overview -->
+      <section class="stats-cards">
+        <div class="card stat-card">
+          <div class="card-content">
+            <div class="stat-header">
+              <div>
+                <h3>Active Units</h3>
+                <p class="stat-value">{serverStatus.activeUnits}</p>
+              </div>
+              <div class="stat-icon active">
+                <Bus size={24} />
+              </div>
             </div>
-            <div class="active-units-container">
-                <div class="text-icon">
-                    <h4>Inactive Units</h4>
-                    <Bus color="red" />
-                </div>
-                <h3>{serverStatus.totalUnits - serverStatus.activeUnits}</h3>
-                <p>
-                    <span
-                        >{(
-                            100 -
-                            (serverStatus.activeUnits /
-                                serverStatus.totalUnits) *
-                                100
-                        ).toFixed(2)}% <MoveUpRight size="16" /></span
-                    >
-                    of total registered
-                </p>
+            <div class="stat-footer">
+              <span class="percentage positive">{activePercentage}%</span>
+              <span class="description">of total fleet</span>
             </div>
-            <div class="active-units-container">
-                <div class="text-icon">
-                    <h4>Total Registered</h4>
-                    <Bus color="blue" />
-                </div>
-                <h3>{serverStatus.totalUnits}</h3>
-                <p>
-                    <span>100%</span>
-                </p>
-            </div>
+          </div>
         </div>
-        <div class="chart-container">
-            <SvelteFC {...chartConfigs} />
+
+        <div class="card stat-card">
+          <div class="card-content">
+            <div class="stat-header">
+              <div>
+                <h3>Inactive Units</h3>
+                <p class="stat-value">
+                  {serverStatus.totalUnits - serverStatus.activeUnits}
+                </p>
+              </div>
+              <div class="stat-icon inactive">
+                <Bus size={24} />
+              </div>
+            </div>
+            <div class="stat-footer">
+              <span class="percentage negative">{inactivePercentage}%</span>
+              <span class="description">of total fleet</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card stat-card">
+          <div class="card-content">
+            <div class="stat-header">
+              <div>
+                <h3>Total Fleet</h3>
+                <p class="stat-value">{serverStatus.totalUnits}</p>
+              </div>
+              <div class="stat-icon total">
+                <Bus size={24} />
+              </div>
+            </div>
+            <div class="stat-footer">
+              <span class="percentage">100%</span>
+              <span class="description">registered vehicles</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Charts Section -->
+      <section class="charts-section">
+        <div class="chart-container card">
+          <h3>Monthly Bus Operations</h3>
+          <SvelteFC {...chartConfigs} />
+        </div>
+
+        <div class="chart-row">
+          <div class="chart-container card">
+            <h3>Fleet Status</h3>
             <SvelteFC {...pieConfigs} />
+          </div>
+
+          <div class="chart-container card">
+            <h3>Performance Metrics</h3>
             <SvelteFC {...lineConfigs} />
+          </div>
         </div>
-        <SvelteFC {...stackedConfigs} />
-    </div>
-    <div class="serverinfo">
-        <div class="system-info">
-            <h3>General Server Details</h3>
-            <p><Pen /><b>Server Name:</b> {serverStatus.ServerName}</p>
-            <p><MapPin /><b>Server IP Address:</b> {serverStatus.ServerIp}</p>
-            <p><Clock /><b>System Uptime:</b> {serverStatus.SystemUptime}</p>
+      </section>
 
-            <h3>Hardware Specifications</h3>
-            <p><Logs /><b>Recent Logs:</b> {serverStatus.RecentLogs}</p>
-            <p>
-                <MonitorCheck /><b>Active Sessions:</b>
-                {serverStatus.ActiveSessions}
-            </p>
+      <!-- Server Status & Alerts Section -->
+      <section class="dashboard-bottom">
+        <div class="card server-status">
+          <h3>Server Status</h3>
 
-            <h3>Performance Monitoring</h3>
-            <p><Microchip /><b>CPU Usage:</b> {serverStatus.CPUUsage}</p>
-            <p><Cpu /><b>RAM</b></p>
-            <p>Total Memory: {serverStatus.RAM}</p>
-            <p>
-                <TrafficCone /><b>Network Traffic:</b>
-                {serverStatus.NetworkTraffic}
-            </p>
+          <div class="status-item">
+            <div class="status-label">
+              <Cpu size={16} />
+              <span>CPU Usage</span>
+            </div>
+            <div class="progress-container">
+              <div
+                class="progress-bar"
+                style="width: {serverStatus.CPUUsage}%; background-color: {getProgressColor(
+                  serverStatus.CPUUsage,
+                )}"
+              ></div>
+            </div>
+            <span class="progress-value">{serverStatus.CPUUsage}%</span>
+          </div>
 
-            <h3>User and Access Details</h3>
-            <p>
-                <UserCheck /><b>Logged-in Users:</b>
-                {serverStatus.LoggedinUsers}
-            </p>
-            <p><BookUser /><b>Access Logs:</b> {serverStatus.AccessLogs}</p>
-            <p><ShieldAlert /><b>Error Logs:</b> {serverStatus.ErrorLogs}</p>
+          <div class="status-item">
+            <div class="status-label">
+              <Microchip size={16} />
+              <span>RAM Usage</span>
+            </div>
+            <div class="progress-container">
+              <div
+                class="progress-bar"
+                style="width: 50%; background-color: {getProgressColor(50)}"
+              ></div>
+            </div>
+            <span class="progress-value">50%</span>
+          </div>
 
-            <h3>Server Events and Alerts</h3>
-            <p>
-                <CalendarCheck /><b>Scheduled Maintenance:</b>
-                {serverStatus.ScheduledMaintenance}
-            </p>
-            <p>
-                <CircleAlert /><b>Recent Alerts:</b>
-                {serverStatus.RecentAlerts}
-            </p>
-            <p>
-                <MessageSquareWarning /><b>Incident Reports:</b>
-                {serverStatus.IncidentReports}
-            </p>
+          <div class="status-item">
+            <div class="status-label">
+              <TrafficCone size={16} />
+              <span>Network Traffic</span>
+            </div>
+            <div class="progress-container">
+              <div
+                class="progress-bar"
+                style="width: {serverStatus.NetworkTraffic}%; background-color: {getProgressColor(
+                  serverStatus.NetworkTraffic,
+                )}"
+              ></div>
+            </div>
+            <span class="progress-value">{serverStatus.NetworkTraffic}%</span>
+          </div>
+
+          <div class="server-details">
+            <div class="detail-item">
+              <span class="detail-label">Server Name:</span>
+              <span class="detail-value">{serverStatus.ServerName}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Server IP:</span>
+              <span class="detail-value">{serverStatus.ServerIp}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Uptime:</span>
+              <span class="detail-value">{serverStatus.SystemUptime} hours</span
+              >
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Active Users:</span>
+              <span class="detail-value">{serverStatus.LoggedinUsers}</span>
+            </div>
+          </div>
         </div>
+
+        <div class="card recent-alerts">
+          <h3>Recent Alerts</h3>
+
+          <div class="alerts-list">
+            {#each recentAlerts as alert}
+              <div
+                class="alert-item"
+                class:high={alert.severity === "high"}
+                class:medium={alert.severity === "medium"}
+                class:low={alert.severity === "low"}
+              >
+                <div class="alert-icon">
+                  <CircleAlert size={20} />
+                </div>
+                <div class="alert-content">
+                  <h4>{alert.title}</h4>
+                  <div class="alert-details">
+                    <span>{alert.unit}</span>
+                    <span class="alert-time">{alert.time}</span>
+                  </div>
+                </div>
+              </div>
+            {/each}
+          </div>
+
+          <button class="view-all">View All Alerts</button>
+        </div>
+      </section>
     </div>
+  </main>
 </div>
 
 <style>
-    .container {
-        width: 100%;
-        background-color: var(--background);
-        padding-inline: 1rem;
-        height: 100svh;
-        display: flex;
-        justify-content: space-between;
+  :root {
+    --sidebar-width: max-width;
+    --sidebar-collapsed-width: max-width;
+    --transition-speed: 0.3s;
+  }
+
+  .app-container {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    font-family: "Inter", "Segoe UI", Roboto, sans-serif;
+  }
+
+  /* Main Content Styles */
+  .main-content {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .main-header {
+    height: 64px;
+    padding: 0 2rem;
+    background-color: var(--background);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  .main-header h1 {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .content-area {
+    padding: 1.5rem;
+  }
+
+  /* Cards & Stats Styles */
+  .card {
+    background-color: var(--background);
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+  }
+
+  .card h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding: 1rem 1rem 0;
+  }
+
+  .stats-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .stat-card .card-content {
+    padding: 1rem;
+  }
+
+  .stat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+
+  .stat-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-top: 0.25rem;
+  }
+
+  .stat-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+
+  .stat-icon.active {
+    background-color: var(--accent);
+  }
+
+  .stat-icon.inactive {
+    background-color: var(--secondary);
+  }
+
+  .stat-icon.total {
+    background-color: var(--primary);
+  }
+
+  .stat-footer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .percentage {
+    font-weight: 600;
+  }
+
+  .positive {
+    color: var(--accent);
+  }
+
+  .negative {
+    color: var(--secondary);
+  }
+
+  .description {
+    color: var(--border);
+    font-size: 0.875rem;
+  }
+
+  /* Charts Styles */
+  .charts-section {
+    margin-bottom: 1.5rem;
+  }
+
+  .chart-container {
+    width: 100%;
+  }
+
+  .chart-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    gap: 1rem;
+  }
+
+  /* Server Status & Alerts */
+  .dashboard-bottom {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .server-status,
+  .recent-alerts {
+    padding: 1rem;
+  }
+
+  .status-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    gap: 0.5rem;
+  }
+
+  .status-label {
+    width: 120px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .progress-container {
+    flex: 1;
+    height: 0.5rem;
+    background-color: var(--border);
+    border-radius: 1rem;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    border-radius: 1rem;
+  }
+
+  .progress-value {
+    width: 40px;
+    text-align: right;
+    font-size: 0.875rem;
+  }
+
+  .server-details {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .detail-item {
+    display: flex;
+    margin-bottom: 0.5rem;
+  }
+
+  .detail-label {
+    width: 120px;
+    color: var(--border);
+    font-size: 0.875rem;
+  }
+
+  .alerts-list {
+    margin-bottom: 1rem;
+  }
+
+  .alert-item {
+    display: flex;
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    margin-bottom: 0.5rem;
+    background-color: var(--secondary);
+    background-color: var(--secondary-hover);
+  }
+
+  .alert-item.high {
+    border-left-color: firebrick;
+  }
+
+  .alert-item.medium {
+    border-left-color: var(--secondary);
+  }
+
+  .alert-item.low {
+    border-left-color: var(--accent);
+  }
+
+  .alert-icon {
+    display: flex;
+    align-items: flex-start;
+    margin-right: 0.75rem;
+    color: var(--warning-color);
+  }
+
+  .alert-item.high .alert-icon {
+    color: var(--danger-color);
+  }
+
+  .alert-item.low .alert-icon {
+    color: var(--success-color);
+  }
+
+  .alert-content {
+    flex: 1;
+  }
+
+  .alert-content h4 {
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .alert-details {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--text-light);
+  }
+
+  .view-all {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 0.375rem;
+    color: var(--text-color);
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .view-all:hover {
+    background-color: var(--hover-color);
+  }
+
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .sidebar {
+      position: fixed;
+      height: 100%;
     }
-    .system-info {
-        border: 1px solid black;
-        width: 25vw;
-        height: 100vh;
-        p {
-            display: flex;
-            align-items: center;
-            margin-block: 0.5rem;
-            gap: 0.5rem;
-        }
+
+    .main-content {
+      margin-left: var(--sidebar-collapsed-width);
     }
-    .dashboard-container {
-        height: 100vh;
-        overflow-y: scroll;
-        width: 100%;
-        scrollbar-width: none; /* Firefox */
+
+    .chart-row {
+      grid-template-columns: 1fr;
     }
-    .chart-container {
-        display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
-        padding-block: 2rem;
+
+    .dashboard-bottom {
+      grid-template-columns: 1fr;
     }
-    .overview {
-        display: flex;
-        gap: 1rem;
-    }
-    .active-units-container {
-        border: 1px solid black;
-        width: 30%;
-        padding: 1rem;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        .text-icon {
-            display: flex;
-            justify-content: space-between;
-        }
-        p span {
-            color: green;
-        }
-    }
+  }
 </style>

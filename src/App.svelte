@@ -13,7 +13,6 @@
   import { checkAuth, authStore } from "./lib/auth";
   import { Loader } from "lucide-svelte";
   import Nav from "./components/Nav.svelte";
-  import Testing from "./pages/Testing.svelte";
 
   const routes = {
     "/": Login,
@@ -23,7 +22,6 @@
     "/dashboard": Dashboard,
     "/profile": Profile,
     "/map": Map,
-    "/testing": Testing,
   };
 
   $: {
