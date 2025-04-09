@@ -231,7 +231,7 @@
   const inactivePercentage = (100 - parseFloat(activePercentage)).toFixed(1);
 
   // Progress bar component
-  function getProgressColor(value) {
+  function getProgressColor(value: number) {
     if (value > 80) return "var(--danger-color)";
     if (value > 60) return "var(--warning-color)";
     return "var(--success-color)";
@@ -242,7 +242,7 @@
   <!-- Main Content -->
   <main class="main-content">
     <header class="main-header">
-      <h1>Bus Fleet Management Dashboard</h1>
+      <h1>Dashboard</h1>
     </header>
 
     <div class="content-area">
@@ -705,11 +705,6 @@
 
   /* Responsive Adjustments */
   @media (max-width: 768px) {
-    .sidebar {
-      position: fixed;
-      height: 100%;
-    }
-
     .main-content {
       margin-left: var(--sidebar-collapsed-width);
     }

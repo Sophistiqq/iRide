@@ -1,10 +1,23 @@
-// auth.ts
+// auth.ts (frontend)
 import { push } from "svelte-spa-router";
 import { writable } from "svelte/store";
 
 type User = {
-  id: string;
+  _id: string;
+  name: string;
+  username: string;
   email: string;
+  phone: string;
+  avatar: string;
+  address: string;
+  account_type: string;
+  subscription?: {
+    type: string;
+    status: string;
+    start_date: string;
+    expires_at: string;
+    device_allowed: number;
+  };
 };
 
 type AuthState = {
@@ -13,8 +26,8 @@ type AuthState = {
   isInitialized: boolean;
 };
 
-const SERVER_URL = import.meta.env.VITE_SERVER_API_URL
-const tokenKey = "secret";
+const SERVER_URL = import.meta.env.VITE_SERVER_API_URL;
+const tokenKey = "auth_token";
 
 // Single auth store
 export const authStore = writable<AuthState>({
@@ -23,7 +36,7 @@ export const authStore = writable<AuthState>({
   isInitialized: false
 });
 
-// Enhanced token management
+// Token management
 const TokenManager = {
   set(token: string) {
     localStorage.setItem(tokenKey, token);
@@ -36,70 +49,62 @@ const TokenManager = {
   }
 };
 
-// Update checkAuth to handle session invalidation
 export async function checkAuth(shouldRedirect = true): Promise<boolean> {
   const token = TokenManager.get();
+  const storedUser = localStorage.getItem('user');
+  const currentRoute = window.location.hash.replace(/^#/, '');
 
-  if (!token) {
+  if (!token || !storedUser) {
     authStore.set({
       user: null,
       isAuthenticated: false,
       isInitialized: true
     });
-    if (shouldRedirect) {
+
+    const publicRoutes = ['/', '/register'];
+
+    if (shouldRedirect && !publicRoutes.includes(currentRoute)) {
       push('/');
     }
+
     return false;
   }
 
   try {
-    const response = await fetch(`${SERVER_URL}/me`, {
-      headers: { Authorization: `Bearer ${token}` },
+    const user = JSON.parse(storedUser);
+    authStore.set({
+      user,
+      isAuthenticated: true,
+      isInitialized: true
     });
 
-    if (response.ok) {
-      const data = await response.json();
-      authStore.set({
-        user: data.user,
-        isAuthenticated: true,
-        isInitialized: true
-      });
-      if (shouldRedirect && window.location.href !== '#/map') {
-        push('/map');
-      }
-      return true;
-    } else {
-      const data = await response.json();
-      // Handle session expired/invalid specifically
-      if (data.error === "Session expired or invalid") {
-        TokenManager.remove();
-        authStore.set({
-          user: null,
-          isAuthenticated: false,
-          isInitialized: true
-        });
-        // Maybe show a message to the user that they were logged out
-      }
-      throw new Error('Invalid token');
+    if (shouldRedirect && currentRoute === '/') {
+      push('/dashboard');
     }
+
+    return true;
   } catch (error) {
+    console.error('Error parsing stored user:', error);
     TokenManager.remove();
+    localStorage.removeItem('user');
     authStore.set({
       user: null,
       isAuthenticated: false,
       isInitialized: true
     });
-    if (shouldRedirect) {
+
+    if (shouldRedirect && !['/', '/register'].includes(currentRoute)) {
       push('/');
     }
+
     return false;
   }
 }
 
-// Add new error handling in login function
-export async function login(username: string, password: string): Promise<User | null> {
+// Login function
+export async function login(username: string, password: string): Promise<any> {
   try {
-    const response = await fetch(`${SERVER_URL}/login`, {
+    const response = await fetch(`${SERVER_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
@@ -115,30 +120,37 @@ export async function login(username: string, password: string): Promise<User | 
         isInitialized: true
       });
       localStorage.setItem('user', JSON.stringify(data.user));
-      console.log('data', data);
       push('/dashboard');
-      return data;
-    } else {
-      return data
     }
+
+    return data;
   } catch (error) {
     console.error('Login error:', error);
-    // You might want to show this error in your UI
-    return null;
+    return {
+      status: "error",
+      message: "Network error, please check your connection"
+    };
   }
 }
 
-// Update logout function
+// Updated logout function to use new API endpoint
 export async function logout(): Promise<void> {
   try {
-    await fetch(`${SERVER_URL}/logout`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${TokenManager.get()}` },
-    });
+    const token = TokenManager.get();
+    if (token) {
+      await fetch(`${SERVER_URL}/auth/logout`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+      });
+    }
   } catch (error) {
     console.error('Logout error:', error);
   } finally {
     TokenManager.remove();
+    localStorage.removeItem('user');
     authStore.set({
       user: null,
       isAuthenticated: false,
@@ -147,47 +159,25 @@ export async function logout(): Promise<void> {
     push('/');
   }
 }
-// Registration function should accept formData object
-export async function register(formData: any): Promise<User | null> {
-  console.log('formData', formData);
+
+// Registration function
+export async function register(formData: any): Promise<any> {
   try {
-    const response = await fetch(`${SERVER_URL}/register`, {
-      headers: { "Content-Type": "application/json" },
+    const response = await fetch(`${SERVER_URL}/auth/register`, {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
     });
+
     const data = await response.json();
-    console.log('data', data);
-    if (data.status === "success") {
-      return data;
-    } else {
-      return null;
-    }
+
+    // Return the full response so the component can handle success/error
+    return data;
   } catch (error) {
     console.error('Registration error:', error);
-    return null;
+    return {
+      status: "error",
+      message: "Network error, please check your connection"
+    };
   }
 }
-
-// Navigation guard helper
-export function requireAuth(onFailure: () => void = () => window.location.href = '/#/login'): void {
-  if (!TokenManager.get()) {
-    onFailure();
-  }
-}
-// Add route guards
-export function guardAuthenticatedRoute(path: string): void {
-  const token = localStorage.getItem('auth_token');
-  if (!token && path !== '/login' && path !== '/register') {
-    push('/login');
-  }
-}
-
-export function guardPublicRoute(path: string): void {
-  const token = localStorage.getItem('auth_token');
-  if (token && (path === '/login' || path === '/register' || path === '/')) {
-    push('/map');
-  }
-}
-
-
