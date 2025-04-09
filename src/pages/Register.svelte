@@ -467,6 +467,7 @@
   @media (max-width: 768px) {
     .register-form {
       grid-template-columns: 1fr;
+      margin-bottom: 2rem;
     }
   }
 

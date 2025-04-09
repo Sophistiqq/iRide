@@ -28,8 +28,6 @@
     // Add default tile layer to map
     baseLayers["OpenStreetMap"].addTo(map);
 
-    L.control.layers(baseLayers, {}, { position: "bottomleft" }).addTo(map);
-
     // Add custom controls
     addMapControls();
 
@@ -89,13 +87,46 @@
 
       // Create popup content
       const popupContent = `
-        <div class="popup-content">
-          <h3>${deviceId}</h3>
-          <p><b>Latitude:</b> ${device.latitude.toFixed(6)}</p>
-          <p><b>Longitude:</b> ${device.longitude.toFixed(6)}</p>
-          <p><b>Timestamp:</b> ${new Date(device.timestamp).toLocaleString()}</p>
+      <div class="popup-content">
+        <h3>${device.device_id}</h3>
+        <h5>Device Name: ${device.device_name || "N/A"}</h5>
+        <small>Body No.: ${device.body_number || "N/A"}</small>
+
+        <div class="popup-section">
+          <h4>Coordinates</h4>
+          <div class="popup-grid">
+            <div><b>Lat:</b> ${device.latitude.toFixed(6)}</div>
+            <div><b>Lng:</b> ${device.longitude.toFixed(6)}</div>
+          </div>
         </div>
-      `;
+
+        <div class="popup-section">
+          <h4>Telemetry</h4>
+          <div class="popup-grid">
+            <div><b>Speed:</b> ${device.speed != null ? device.speed + " km/h" : "N/A"}</div>
+            <div><b>Altitude:</b> ${device.altitude != null ? device.altitude + " m" : "N/A"}</div>
+            <div><b>Course:</b> ${device.course != null ? device.course + "°" : "N/A"}</div>
+            <div><b>HDOP:</b> ${device.hdop ?? "N/A"}</div>
+          </div>
+        </div>
+
+        <div class="popup-section">
+          <h4>Satellites</h4>
+          <div class="popup-grid">
+            <div><b>Count:</b> ${device.satellites ?? "N/A"}</div>
+            <div><b>GPS Time:</b> ${device.gps_date ?? ""} ${device.gps_time ?? ""}</div>
+          </div>
+        </div>
+
+        <div class="popup-section">
+          <h4>Status</h4>
+          <div class="popup-grid">
+            <div><b>Last Update:</b></div>
+            <div>${new Date(device.timestamp).toLocaleString()}</div>
+          </div>
+        </div>
+      </div>
+    `;
 
       if (markers.has(deviceId)) {
         // Update existing marker
@@ -398,18 +429,40 @@
 
   /* Pop-up styling */
   :global(.popup-content) {
-    font-family: Arial, sans-serif;
-    font-size: 13px;
+    font-family: sans-serif;
+    font-size: 0.85rem;
+    line-height: 1.4;
+
+    h3 {
+      font-size: 1.1rem;
+      margin: 0 0 2px;
+    }
+
+    small {
+      display: block;
+      margin-bottom: 8px;
+      color: #666;
+    }
   }
 
-  :global(.popup-content h3) {
-    margin: 0 0 8px 0;
-    font-size: 15px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 5px;
-  }
+  :global(.popup-section) {
+    margin-bottom: 10px;
 
-  :global(.popup-content p) {
-    margin: 4px 0;
+    h4 {
+      margin: 4px 0;
+      font-size: 0.9rem;
+      color: #333;
+      border-bottom: 1px solid #ddd;
+    }
+
+    :global(.popup-grid) {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px 8px;
+
+      div {
+        white-space: nowrap;
+      }
+    }
   }
 </style>
