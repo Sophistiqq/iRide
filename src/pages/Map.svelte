@@ -26,7 +26,7 @@
     });
 
     // Add default tile layer to map
-    baseLayers["StadiaOSMBright"].addTo(map);
+    baseLayers["OpenStreetMap"].addTo(map);
 
     L.control.layers(baseLayers, {}, { position: "bottomleft" }).addTo(map);
 
